@@ -213,6 +213,12 @@
     ob.onclick=function(){ diObjetivo(); };
     var tc=$('targetCard'); if(tc) tc.addEventListener('click',diObjetivo);
     velo.querySelectorAll('a[data-sk]').forEach(function(a){ a.addEventListener('click',function(){cuenta('skool_'+a.getAttribute('data-sk'))}); });
+
+    /* ---- volver al inicio (carátula) ---- */
+    function inicio(){ try{ if(au) au.pause(); }catch(e){} var f=$('endScreen'); if(f) f.classList.remove('show'); var a2=document.querySelectorAll('.lx-ajp'); a2.forEach(function(x){x.hidden=true}); velo.hidden=false; velo.scrollTop=0; cuenta('inicio'); }
+    var nb=$('newCardBtn');
+    if(nb && nb.parentNode){ var hb=document.createElement('button'); hb.type='button'; hb.id='lxInicio'; hb.className='btn-premium btn-secondary'; hb.setAttribute('aria-label','Volver al inicio'); hb.innerHTML='<span class="btn-icon">🏠</span><span class="btn-text">Inicio</span>'; hb.onclick=inicio; nb.parentNode.insertBefore(hb,nb); }
+    var ec2=document.querySelector('#endScreen .end-content'); if(ec2){ var hb2=document.createElement('button'); hb2.type='button'; hb2.className='lx-inicio-grande'; hb2.innerHTML='🏠 Volver al inicio'; hb2.onclick=inicio; var pa=$('playAgainBtn'); if(pa && pa.parentNode) pa.parentNode.insertBefore(hb2,pa.nextSibling); else ec2.appendChild(hb2); }
     document.querySelectorAll('.category-pill,.phoneme-pill').forEach(function(p){ p.addEventListener('click',function(){ SEL=null; },true); });
     $('lxJugar').onclick=function(){
       cuenta('jugar'); if(modoPicto()) cuenta('jugar_picto'); if(SEL) cuenta('jugar_sel');
