@@ -6,10 +6,13 @@
   function $(i){return document.getElementById(i)}
   function cuenta(k){ if(window.linceCuenta) window.linceCuenta(k); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}); }
-  function cargar(){ try{ var d=JSON.parse(localStorage.getItem(KEY)||'null'); if(d&&d.casos) return d; }catch(e){} return {on:false,caso:'',casos:{}}; }
+  function cargar(){ try{ var d=JSON.parse(localStorage.getItem(KEY)||'null'); if(d&&d.casos) return d; }catch(e){} return {on:true,caso:'',casos:{},pend:{sesiones:[]},v:2}; }
   var D=cargar();
+  if(!D.v){ D.v=2; D.on=true; } if(!D.pend||!D.pend.sesiones) D.pend={sesiones:[]};
   function guardar(){ try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){} }
-  function activo(){ return (D.on && D.caso && D.casos[D.caso]) ? D.casos[D.caso] : null; }
+  function activo(){ if(!D.on) return null; if(D.caso && D.casos[D.caso]) return D.casos[D.caso]; return D.pend; }
+  function actual(){ return (D.caso && D.casos[D.caso]) ? D.casos[D.caso] : D.pend; }
+  function sigCodigo(){ var n=1; while(D.casos['N-'+(n<10?'0':'')+n]) n++; return 'N-'+(n<10?'0':'')+n; }
   function DB(){ return (typeof itemDatabase!=='undefined')?itemDatabase:[]; }
   function ajustes(){ return window.lxAjustes?window.lxAjustes():{}; }
 
@@ -176,7 +179,7 @@
   function informeHTML(codigo,c,a){
     var f=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
     var ses=c.sesiones, d1=ses.length?new Date(ses[0].t0).toLocaleDateString('es-ES'):'—', d2=ses.length?new Date(ses[ses.length-1].t0).toLocaleDateString('es-ES'):'—';
-    var h='<header class="lxi-cab"><div><h1>Informe de juego · El Lince Digital</h1><p>Caso <b>'+esc(codigo)+'</b>'+(c.edad?' · edad '+esc(c.edad)+' años':'')+' · '+d1+' a '+d2+' · '+a.sesiones+' sesiones, '+a.hechas+' palabras</p></div><div class="lxi-ver">Informe anonimizado · '+f+'</div></header>';
+    var h='<header class="lxi-cab"><div><h1>Informe de juego · El Lince Digital</h1><p>'+(codigo?'Caso <b>'+esc(codigo)+'</b>':'Partidas de este aparato (sin código de caso)')+(c.edad?' · edad '+esc(c.edad)+' años':'')+' · '+d1+' a '+d2+' · '+a.sesiones+(a.sesiones===1?' sesión, ':' sesiones, ')+a.hechas+' palabras</p></div><div class="lxi-ver">Informe anonimizado · '+f+'</div></header>';
     var res=textoResumen(a,codigo);
     h+='<section><h2>Resumen</h2>'+(res.length?'<ul>'+res.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>':'<p class="lxi-vacio">Todavía no hay partidas suficientes. Juega al menos una sesión de 5 palabras con este caso activo.</p>')+'</section>';
     if(!a.hechas) return h;
@@ -204,43 +207,49 @@
   var inf=document.createElement('div'); inf.id='lxInforme'; inf.hidden=true;
   var casos=document.createElement('div'); casos.className='lx-ajp'; casos.hidden=true; casos.id='lxCasos';
   function abreInforme(){
-    var c=D.casos[D.caso]; if(!c){ abreCasos(); return; }
+    var c=actual();
     cierraSesion(); if(D.on&&!S&&false){}
     var a=analiza(c.sesiones);
-    inf.innerHTML='<div class="lxi-barra"><button type="button" id="lxiImp" class="lxi-prim">🖨️ Imprimir o guardar en PDF</button><button type="button" id="lxiCsv">⬇️ Datos (CSV)</button><button type="button" id="lxiTxt">📋 Copiar resumen</button><button type="button" id="lxiCerrar">Cerrar</button></div><div class="lxi-hoja" id="lxiHoja">'+informeHTML(D.caso,c,a)+'</div>';
+    inf.innerHTML='<div class="lxi-barra"><button type="button" id="lxiImp" class="lxi-prim">🖨️ Imprimir o guardar en PDF</button><button type="button" id="lxiCsv">⬇️ Datos (CSV)</button><button type="button" id="lxiTxt">📋 Copiar resumen</button><button type="button" id="lxiCerrar">Cerrar</button></div><div class="lxi-hoja" id="lxiHoja">'+informeHTML(D.caso||'',c,a)+'</div>';
     inf.hidden=false; inf.scrollTop=0; document.body.classList.add('lxi-abierto'); cuenta('informe_ver');
     $('lxiCerrar').onclick=function(){ inf.hidden=true; document.body.classList.remove('lxi-abierto'); };
     $('lxiImp').onclick=function(){ cuenta('informe_imprimir'); window.print(); };
-    $('lxiCsv').onclick=function(){ cuenta('informe_csv'); baja('lince-'+D.caso.replace(/[^a-z0-9_-]/gi,'_')+'.csv','﻿'+csv(c,D.caso),'text/csv;charset=utf-8'); };
-    $('lxiTxt').onclick=function(){ var t='Informe de juego · El Lince Digital · caso '+D.caso+'\n'+textoResumen(a).map(function(x){return '- '+x}).join('\n')+'\n(Datos de juego, sin valor diagnóstico. Anonimizado.)'; if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ $('lxiTxt').textContent='✓ Copiado'; },function(){ window.prompt('Copia el resumen:',t); }); else window.prompt('Copia el resumen:',t); };
+    $('lxiCsv').onclick=function(){ cuenta('informe_csv'); baja('lince-'+(D.caso||'sin-codigo').replace(/[^a-z0-9_-]/gi,'_')+'.csv','﻿'+csv(c,D.caso||'sin-codigo'),'text/csv;charset=utf-8'); };
+    $('lxiTxt').onclick=function(){ var t='Informe de juego · El Lince Digital'+(D.caso?' · caso '+D.caso:'')+'\n'+textoResumen(a).map(function(x){return '- '+x}).join('\n')+'\n(Datos de juego, sin valor diagnóstico. Anonimizado.)'; if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ $('lxiTxt').textContent='✓ Copiado'; },function(){ window.prompt('Copia el resumen:',t); }); else window.prompt('Copia el resumen:',t); };
   }
-  function aviso(){ var b=document.getElementById('lxCasoBadge'); var c=activo(); if(!b){ b=document.createElement('div'); b.id='lxCasoBadge'; document.body.appendChild(b); } if(c){ b.textContent='● Guardando datos · caso '+D.caso; b.hidden=false; } else b.hidden=true; }
+  function aviso(){ var b=document.getElementById('lxCasoBadge'); var c=(D.on&&D.caso&&D.casos[D.caso])?D.casos[D.caso]:null; if(!b){ b=document.createElement('div'); b.id='lxCasoBadge'; document.body.appendChild(b); } if(c){ b.textContent='● Guardando datos · caso '+D.caso; b.hidden=false; } else b.hidden=true; }
   function pintaCasos(){
-    var ks=Object.keys(D.casos);
-    casos.innerHTML='<div class="lx-caja lx-ancha" role="dialog" aria-label="Informe y casos"><h2>📊 Informe de caso</h2>'+
-     '<p class="lx-peque">El juego puede guardar los datos de cada partida <b>solo en este aparato</b> para sacar un informe anonimizado con gráficas. No se envía nada a internet. Usa un código, <b>nunca el nombre</b> (por ejemplo, N-07).</p>'+
-     '<div class="lx-fila"><label for="lxcOn">Guardar los datos de las partidas<small>Se guardan en el caso elegido.</small></label><input type="checkbox" id="lxcOn"'+(D.on?' checked':'')+'></div>'+
-     '<div class="lx-fila"><label for="lxcSel">Caso activo</label><select id="lxcSel"><option value="">— ninguno —</option>'+ks.map(function(k){return '<option value="'+esc(k)+'"'+(k===D.caso?' selected':'')+'>'+esc(k)+' ('+D.casos[k].sesiones.length+' sesiones)</option>'}).join('')+'</select></div>'+
-     '<h3 style="margin:12px 0 4px;font-size:16px">Nuevo caso</h3>'+
-     '<div class="lx-otra"><input id="lxcCod" type="text" maxlength="16" placeholder="Código con número: N-07" autocomplete="off"><select id="lxcEdad"><option value="">Edad</option><option>3-4</option><option>5-6</option><option>7-8</option><option>9-10</option><option>11-12</option><option>13+</option></select><button type="button" id="lxcCrea">Crear</button></div>'+
+    var ks=Object.keys(D.casos), np=D.pend.sesiones.length;
+    casos.innerHTML='<div class="lx-caja lx-ancha" role="dialog" aria-label="Informe y casos"><h2>📊 Informe de las partidas</h2>'+
+     '<p class="lx-peque">El juego guarda los datos de las partidas <b>solo en este aparato</b> para sacar un informe anonimizado con gráficas. No se envía nada a internet. Juega con normalidad: el código de caso se pone después, si quieres.</p>'+
+     '<p><b>Partidas sin código: '+np+' sesión'+(np===1?'':'es')+'</b> <span class="lx-peque">(solo cuentan las de 5 palabras o más)</span></p>'+
+     '<div class="lx-botones"><button type="button" class="lx-prim" id="lxcVerP">📈 Ver informe de estas partidas</button><button type="button" id="lxcCsvP">⬇️ Datos (CSV)</button><button type="button" id="lxcBorraP">🗑️ Borrar estas partidas</button></div>'+
+     '<h3 style="margin:14px 0 4px;font-size:16px">Ponerles un código de caso</h3>'+
+     '<p class="lx-peque">Un código con número, <b>nunca el nombre</b>. Ya viene uno propuesto: pulsa Crear y las partidas de arriba pasan a ese caso.</p>'+
+     '<div class="lx-otra"><input id="lxcCod" type="text" maxlength="16" value="'+sigCodigo()+'" autocomplete="off" aria-label="Código del caso"><select id="lxcEdad"><option value="">Edad (opcional)</option><option>3-4</option><option>5-6</option><option>7-8</option><option>9-10</option><option>11-12</option><option>13+</option></select><button type="button" id="lxcCrea">Crear</button></div>'+
      '<p class="lx-peque" id="lxcMsg"></p>'+
-     '<div class="lx-botones"><button type="button" class="lx-prim" id="lxcVer">📈 Ver informe</button><button type="button" id="lxcCsv">⬇️ Datos (CSV)</button><button type="button" id="lxcBorra">🗑️ Borrar este caso</button><button type="button" id="lxcCierra">Cerrar</button></div>'+
-     '<p class="lx-peque">Un caso nuevo no se mezcla con otro. Si cambias de aparato, los datos no se llevan: descarga el CSV. Son datos de juego, sin valor diagnóstico.</p></div>';
+     (ks.length?'<h3 style="margin:14px 0 4px;font-size:16px">Casos guardados</h3><div class="lx-fila"><label for="lxcSel">Caso activo</label><select id="lxcSel"><option value="">— ninguno (partidas sin código) —</option>'+ks.map(function(k){return '<option value="'+esc(k)+'"'+(k===D.caso?' selected':'')+'>'+esc(k)+' ('+D.casos[k].sesiones.length+' sesiones)</option>'}).join('')+'</select></div><div class="lx-botones"><button type="button" id="lxcVer">📈 Ver informe del caso</button><button type="button" id="lxcCsv">⬇️ Datos (CSV)</button><button type="button" id="lxcBorra">🗑️ Borrar este caso</button></div>':'')+
+     '<div class="lx-fila"><label for="lxcOn">Guardar las partidas en este aparato<small>Desmárcalo si no quieres que se guarde nada.</small></label><input type="checkbox" id="lxcOn"'+(D.on?' checked':'')+'></div>'+
+     '<div class="lx-botones"><button type="button" id="lxcCierra">Cerrar</button></div>'+
+     '<p class="lx-peque">Si cambias de aparato los datos no se llevan: descarga el CSV. Son datos de juego, sin valor diagnóstico.</p></div>';
     var q=function(i){return casos.querySelector('#'+i)}, msg=function(t){q('lxcMsg').textContent=t};
-    q('lxcOn').onchange=function(){ if(this.checked&&!D.caso){ this.checked=false; msg('Primero crea o elige un caso.'); return; } D.on=this.checked; guardar(); aviso(); };
-    q('lxcSel').onchange=function(){ D.caso=this.value; if(!D.caso) D.on=false; else if(!D.on) D.on=true; guardar(); aviso(); pintaCasos(); };
+    q('lxcOn').onchange=function(){ D.on=this.checked; guardar(); aviso(); };
+    if(q('lxcSel')) q('lxcSel').onchange=function(){ D.caso=this.value; guardar(); aviso(); pintaCasos(); };
+    q('lxcVerP').onclick=function(){ D.caso=''; guardar(); aviso(); casos.hidden=true; abreInforme(); };
+    q('lxcCsvP').onclick=function(){ cuenta('informe_csv'); baja('lince-sin-codigo.csv','\ufeff'+csv(D.pend,'sin-codigo'),'text/csv;charset=utf-8'); };
+    q('lxcBorraP').onclick=function(){ if(window.confirm('¿Borrar las partidas sin código de este aparato? No se puede deshacer.')){ D.pend.sesiones=[]; guardar(); pintaCasos(); } };
     q('lxcCrea').onclick=function(){
       var cod=q('lxcCod').value.trim().replace(/\s+/g,' ');
       if(cod.length<2){ msg('Escribe un código de al menos 2 caracteres.'); return; }
       if(!/^[A-Za-z0-9 _-]+$/.test(cod)){ msg('Solo letras, números, espacio, guion y guion bajo. Sin tildes ni nombres.'); return; }
-      if(!/[0-9]/.test(cod)){ msg('El código debe llevar al menos un número (por ejemplo N-07). Así se evita poner nombres: usa un código, nunca el nombre.'); return; }
-      if(D.casos[cod]){ msg('Ese código ya existe.'); return; }
+      if(!/[0-9]/.test(cod)){ msg('El código debe llevar un número (por ejemplo N-07). Así se evita poner nombres.'); return; }
+      if(D.casos[cod]){ msg('Ese código ya existe: elige otro.'); return; }
       if(Object.keys(D.casos).length>=40){ msg('Hay demasiados casos en este aparato. Borra alguno.'); return; }
-      D.casos[cod]={edad:q('lxcEdad').value,creado:new Date().toISOString(),sesiones:[]}; D.caso=cod; D.on=true; guardar(); aviso(); cuenta('informe_caso_nuevo'); pintaCasos(); casos.querySelector('#lxcMsg').textContent='Caso «'+cod+'» creado. Desde ahora se guardan los datos de las partidas.';
+      D.casos[cod]={edad:q('lxcEdad').value,creado:new Date().toISOString(),sesiones:D.pend.sesiones.slice()}; D.pend.sesiones=[]; D.caso=cod; guardar(); aviso(); cuenta('informe_caso_nuevo'); pintaCasos(); casos.querySelector('#lxcMsg').textContent='Caso «'+cod+'» creado con esas partidas. Las siguientes se guardan en este caso.';
     };
-    q('lxcVer').onclick=function(){ casos.hidden=true; abreInforme(); };
-    q('lxcCsv').onclick=function(){ var c=D.casos[D.caso]; if(!c){ msg('Elige un caso.'); return; } cuenta('informe_csv'); baja('lince-'+D.caso.replace(/[^a-z0-9_-]/gi,'_')+'.csv','﻿'+csv(c,D.caso),'text/csv;charset=utf-8'); };
-    q('lxcBorra').onclick=function(){ if(!D.caso){ msg('Elige un caso.'); return; } if(window.confirm('¿Borrar el caso «'+D.caso+'» y todos sus datos de este aparato? No se puede deshacer.')){ delete D.casos[D.caso]; D.caso=''; D.on=false; guardar(); aviso(); pintaCasos(); } };
+    if(q('lxcVer')) q('lxcVer').onclick=function(){ if(!D.caso){ msg('Elige un caso.'); return; } casos.hidden=true; abreInforme(); };
+    if(q('lxcCsv')) q('lxcCsv').onclick=function(){ var c=D.casos[D.caso]; if(!c){ msg('Elige un caso.'); return; } cuenta('informe_csv'); baja('lince-'+D.caso.replace(/[^a-z0-9_-]/gi,'_')+'.csv','\ufeff'+csv(c,D.caso),'text/csv;charset=utf-8'); };
+    if(q('lxcBorra')) q('lxcBorra').onclick=function(){ if(!D.caso){ msg('Elige un caso.'); return; } if(window.confirm('¿Borrar el caso «'+D.caso+'» y todos sus datos de este aparato? No se puede deshacer.')){ delete D.casos[D.caso]; D.caso=''; guardar(); aviso(); pintaCasos(); } };
     q('lxcCierra').onclick=function(){ casos.hidden=true; };
     casos.onclick=function(e){ if(e.target===casos) casos.hidden=true; };
   }
