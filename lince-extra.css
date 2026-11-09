@@ -27,3 +27,4 @@
 body.lx-aoido #targetName{visibility:hidden}
 .lx-oir{position:fixed;left:8px;bottom:8px;z-index:9000;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:22px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
 @media (orientation:landscape) and (max-height:520px){.lx-heroe{max-height:40vh}.lx-cuerpo p{display:none}.lx-cuerpo h1{font-size:22px}.lx-cuerpo{padding:8px 14px 12px}}
+.lx-jugar:active img{content:url(portada/boton-jugar-pulsado.webp)}

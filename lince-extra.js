@@ -33,7 +33,7 @@
    '<img class="lx-heroe" src="portada/portada-ancha.jpg" width="1600" height="900" alt="Un lince con una lupa mira un ratón en un tablero de dibujos" onerror="this.style.minHeight=\'30vh\'"></picture>'+
    '<div class="lx-cuerpo"><h1>🐱 El Lince Digital</h1>'+
    '<p>El lince pide un dibujo y hay que encontrarlo en el tablero. Cada dibujo trabaja un sonido. Se oye cómo se dice.</p>'+
-   '<button class="lx-jugar" id="lxJugar" type="button" aria-label="Jugar ya"><img src="portada/boton-jugar.png" width="720" height="240" alt="" onerror="this.parentNode.classList.add(\'lx-sinimg\')"><span class="lx-txt">▶ Jugar</span></button>'+
+   '<button class="lx-jugar" id="lxJugar" type="button" aria-label="Jugar ya"><img src="portada/boton-jugar.webp" width="720" height="240" alt="" onerror="this.parentNode.classList.add(\'lx-sinimg\')"><span class="lx-txt">▶ Jugar</span></button>'+
    '<a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">🐝 Más juegos en la comunidad ColmenIA</a>'+
    '<a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo en la comunidad</a>'+
    '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
