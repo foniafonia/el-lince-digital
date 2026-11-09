@@ -97,7 +97,7 @@
     $('lxNinguna').onclick=function(){ S.clear(); lista(); };
     $('lxCerrarC').onclick=function(){ crea.hidden=true; };
     $('lxPideC').onclick=abrePide;
-    $('lxImpC').onclick=function(){ if(S.size<4){ $('lxAviso').textContent='Elige al menos 4 palabras para imprimir.'; return; } imprime(itemsCrea(),$('lxCDib').value); };
+    $('lxImpC').onclick=function(){ if(S.size<4){ $('lxAviso').textContent='Elige al menos 4 palabras para imprimir.'; return; } imprime(tableroDe(itemsCrea()),$('lxCDib').value); };
     crea.onclick=function(e){ if(e.target===crea) crea.hidden=true; };
     function url(){ var u=location.origin+location.pathname+'?sel='+Array.from(S).sort(function(a,b){return a-b}).map(function(n){return n.toString(36)}).join('.')+'&dibujos='+$('lxCDib').value; var c=Q.get('c'); if(c) u+='&c='+encodeURIComponent(c); return u; }
     $('lxCopiar').onclick=function(){
@@ -138,28 +138,45 @@
   }
   function abrePide(){ if(!pide.firstChild) montaPide(); pide.hidden=false; cuenta('pide_abrir'); }
 
-  /* ---- imprimir: tablero + cartas para recortar ---- */
+  /* ---- imprimir: tablero REDONDO + cartas redondas para recortar ---- */
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}); }
   function imgDe(it,modo,cls){ return (modo==='picto' && P[it.name]) ? '<img class="'+cls+'" src="picto/'+P[it.name]+'.webp" alt="">' : '<span class="'+cls+' e">'+it.emoji+'</span>'; }
-  function imprime(items,modo,vista){
-    if(modo==='picto') items=items.filter(function(it){return !!P[it.name]});
-    if(items.length<4){ alert('Para imprimir hacen falta al menos 4 palabras'+(modo==='picto'?' con picto':'')+'.'); return; }
+  /* mismas posiciones que el tablero del juego: centro + anillos de 6, 12 y 18 */
+  function posAnillos(n){
+    var cfg=[{c:1,r:0},{c:6,r:.24},{c:12,r:.48},{c:18,r:.72}], pos=[], ri=0;
+    cfg.forEach(function(g){
+      if(g.c===1){ pos.push({x:50,y:50}); }
+      else{ var paso=2*Math.PI/g.c, off=(ri%2===1)?paso/2:0, st=-Math.PI/2+off; for(var i=0;i<g.c;i++){ var an=st+i*paso; pos.push({x:50+g.r*50*Math.cos(an),y:50+g.r*50*Math.sin(an)}); } }
+      ri++;
+    });
+    return pos.slice(0,n);
+  }
+  function mezcla(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+  /* tablero con las palabras elegidas, repartidas al azar en los anillos */
+  function tableroDe(items){ var it=mezcla(items).slice(0,37), pos=posAnillos(it.length); return it.map(function(x,i){ return {x:pos[i].x,y:pos[i].y,it:x}; }); }
+  /* el tablero que se está viendo en el juego, casilla por casilla */
+  function tableroActual(){
+    var r=[]; try{ var db=state.items; document.querySelectorAll('.board .cell').forEach(function(c){ var e=c.querySelector('.cell-emoji'); if(!e) return; var em=e.textContent.trim(); var it=db.find(function(i){return i.emoji===em}); if(it) r.push({x:parseFloat(c.style.left),y:parseFloat(c.style.top),it:it}); }); }catch(x){}
+    return r;
+  }
+  function imprime(tab,modo,vista){
+    if(modo==='picto'){ tab=tab.filter(function(t){return !!P[t.it.name]}); }
+    if(tab.length<4){ alert('Para imprimir hacen falta al menos 4 palabras'+(modo==='picto'?' con picto':'')+'.'); return; }
+    if(modo==='picto' && tab.length<37){ /* recoloca en los anillos desde el centro para no dejar huecos raros */ var pos=posAnillos(tab.length); tab=tab.map(function(t,i){ return {x:pos[i].x,y:pos[i].y,it:t.it}; }); }
     var old=document.getElementById('lxImpr'); if(old) old.remove();
     var d=document.createElement('div'); d.id='lxImpr';
-    var tab=items.slice(0,36), h='';
-    h+='<section class="lxp-tab"><h1>🐱 El Lince · tablero</h1><p>Di una palabra en voz alta y busca su dibujo en el tablero.</p><div class="lxp-rej">'+
-       tab.map(function(it){return '<div class="lxp-c">'+imgDe(it,modo,'lxp-d')+'<b>'+esc(it.name)+'</b></div>'}).join('')+'</div></section>';
-    h+='<section class="lxp-car"><h1>Cartas para recortar</h1><p>Recorta las cartas, mézclalas y ve sacando una: ¿dónde está en el tablero?</p><div class="lxp-cartas">'+
-       items.slice(0,60).map(function(it){return '<div class="lxp-k">'+imgDe(it,modo,'lxp-kd')+'<b>'+esc(it.name)+'</b></div>'}).join('')+'</div></section>';
+    var h='<section class="lxp-tab"><h1>🐱 El Lince · tablero</h1><p>Saca una carta, di la palabra en voz alta y busca su dibujo en el tablero.</p><div class="lxp-disco">'+
+      tab.map(function(t){ return '<div class="lxp-cel" style="left:'+t.x.toFixed(2)+'%;top:'+t.y.toFixed(2)+'%">'+imgDe(t.it,modo,'lxp-d')+'</div>'; }).join('')+'</div></section>';
+    h+='<section class="lxp-car"><h1>Cartas para recortar</h1><p>Recorta por la línea de puntos, mézclalas y ve sacando una.</p><div class="lxp-cartas">'+
+      tab.slice(0,60).map(function(t){ return '<div class="lxp-k">'+imgDe(t.it,modo,'lxp-kd')+'<b>'+esc(t.it.name)+'</b></div>'; }).join('')+'</div></section>';
     h+='<footer class="lxp-pie">El Lince Digital · Gabinete Fönia · ColmenIA · foniafonia.github.io/el-lince-digital'+(modo==='picto'?' · Pictos propios de Fönia (CC0), hechos con IA':'')+' · Material de apoyo: no sustituye a la logopeda.</footer>';
     d.innerHTML=h; if(vista) d.classList.add('lxp-vista');
     document.body.appendChild(d); cuenta('imprimir'); if(modo==='picto') cuenta('imprimir_picto');
     if(!vista){ var fin=function(){ d.remove(); window.removeEventListener('afterprint',fin); }; window.addEventListener('afterprint',fin); setTimeout(function(){ window.print(); },250); }
     return d;
   }
-  window.lxImprime=imprime;
+  window.lxImprime=imprime; window.lxTablero={actual:tableroActual,de:tableroDe};
   function itemsCrea(){ var db=DB(); return db.filter(function(it,i){return S.has(i)}); }
-  function itemsTablero(){ try{ return state.items.slice(); }catch(e){ return []; } }
 
   /* ---- carátula ---- */
   var velo=document.createElement('div'); velo.className='lx-velo'; velo.id='lxPortada';
@@ -198,7 +215,7 @@
     ab.onclick=function(){ap.hidden=false};
     $('lxCerrar').onclick=function(){ap.hidden=true};
     $('lxPideA').onclick=function(){ ap.hidden=true; abrePide(); };
-    $('lxImpA').onclick=function(){ ap.hidden=true; imprime(itemsTablero(),A.dibujos); };
+    $('lxImpA').onclick=function(){ ap.hidden=true; imprime(tableroActual(),A.dibujos); };
     document.body.appendChild(pide);
     ap.onclick=function(e){ if(e.target===ap) ap.hidden=true };
     $('lxVoz').onchange=function(){A.voz=this.checked;guarda()};
@@ -209,7 +226,7 @@
     document.body.appendChild(crea);
     $('lxCreaB').onclick=abreCrea;
     $('lxPideP').onclick=abrePide;
-    $('lxImpP').onclick=function(){ imprime(SEL?DB().filter(function(it,i){return SEL.indexOf(i)>-1}):itemsTablero(),A.dibujos); };
+    $('lxImpP').onclick=function(){ imprime(tableroActual(),A.dibujos); };
     var fin0=$('endScreen'); if(fin0){ var ec=fin0.querySelector('.end-content'); if(ec){ var pb=document.createElement('button'); pb.type='button'; pb.className='lx-pidebtn'; pb.textContent='💬 ¿Qué picto te falta?'; pb.onclick=abrePide; ec.appendChild(pb); } }
     ob.onclick=function(){ diObjetivo(); };
     var tc=$('targetCard'); if(tc) tc.addEventListener('click',diObjetivo);
