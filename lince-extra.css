@@ -90,6 +90,37 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
 .lx-pidebtn{display:block;margin:0 auto 8px;padding:8px 14px;border:0;background:none;color:#7a4a12;font:700 14px Nunito,system-ui,sans-serif;text-decoration:underline;cursor:pointer}
 .end-content .lx-pidebtn{margin-top:6px}
 
+/* ---- pictos y «Crea tu Lince» ---- */
+.lx-pic{font-size:0!important;color:transparent;background-size:contain;background-repeat:no-repeat;background-position:center;mix-blend-mode:multiply;display:block}
+.cell-emoji.lx-pic{width:calc(var(--cell-size)*.82);height:calc(var(--cell-size)*.82)}
+#targetEmoji.lx-pic{width:46px;height:46px}
+.lx-crea{display:block;margin:0 auto 10px;padding:11px 18px;border:2px solid #C98B3A;border-radius:14px;background:#FFF3D3;color:#7a4a12;font:800 16px Nunito,system-ui,sans-serif;cursor:pointer}
+.lx-ancha{max-width:760px!important}
+.lx-peque{font-size:13px;color:#4d6457;margin:6px 0}
+.lx-filtros{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.lx-filtros label{font-size:14px;font-weight:700}
+.lx-caja input[type=search]{width:100%;font:inherit;padding:9px 11px;border:1px solid #cdd8cf;border-radius:10px;margin:4px 0 8px}
+.lx-cuenta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;margin:4px 0 8px}
+.lx-cuenta button,.lx-botones button{font:700 14px Nunito,system-ui,sans-serif;padding:8px 12px;border-radius:10px;border:1px solid #cdd8cf;background:#fff;cursor:pointer}
+.lx-rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:44vh;overflow:auto;padding:4px;border:1px solid #eef2ee;border-radius:12px;background:#FFFBEF}
+.lx-it{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:2px solid #e8dcc0;border-radius:12px;background:#fff;cursor:pointer;position:relative;text-align:center}
+.lx-it.on{border-color:#2FA866;background:#EAF7EE}
+.lx-it input{position:absolute;top:4px;left:4px;width:18px;height:18px}
+.lx-it b{font-size:12px;line-height:1.1}
+.lx-d{display:block;width:54px;height:54px;font-size:38px;line-height:54px;text-align:center}
+.lx-d.lx-pic{width:60px;height:60px}
+.lx-botones{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.lx-botones .lx-prim{background:#2FA866;color:#fff;border-color:#2FA866;font-weight:800}
+
+.lx-chips{display:flex;flex-wrap:wrap;gap:6px;max-height:34vh;overflow:auto;padding:4px;border:1px solid #eef2ee;border-radius:12px;background:#FFFBEF}
+.lx-chip{font:700 13px Nunito,system-ui,sans-serif;padding:6px 9px;border-radius:999px;border:1.5px solid #e0c98e;background:#fff;cursor:pointer}
+.lx-chip.ya{background:#EAF7EE;border-color:#2FA866;color:#1E6B3F}
+.lx-otra{display:flex;gap:8px}
+.lx-otra input{flex:1;font:inherit;padding:9px 11px;border:1px solid #cdd8cf;border-radius:10px}
+.lx-otra button{font:800 14px Nunito,system-ui,sans-serif;padding:9px 14px;border-radius:10px;border:0;background:#2FA866;color:#fff;cursor:pointer}
+.lx-pidebtn{display:block;margin:0 auto 8px;padding:8px 14px;border:0;background:none;color:#7a4a12;font:700 14px Nunito,system-ui,sans-serif;text-decoration:underline;cursor:pointer}
+.end-content .lx-pidebtn{margin-top:6px}
+
 /* ---- imprimir ---- */
 #lxImpr{display:none}
 #lxImpr.lxp-vista{display:block;position:fixed;inset:0;z-index:2147483200;background:#fff;overflow:auto;padding:16px}
@@ -140,15 +171,51 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
   body.lxi-abierto{height:auto!important;overflow:visible!important;background:#fff!important}
 }
 
-/* ---- impresión: tablero redondo y cartas redondas ---- */
-.lxp-disco{position:relative;width:172mm;height:172mm;margin:6mm auto 0;border-radius:50%;border:3.5mm solid #C98B3A;box-sizing:border-box;background:radial-gradient(circle,#EEF4D8 0%,#D5E4B0 100%);-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.lxp-cel{position:absolute;width:12%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:.5mm solid #7a5a2a;background:#FFFBEF;overflow:hidden;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
-.lxp-d{width:86%;height:86%;object-fit:contain;border-radius:50%;display:block}
-.lxp-d.e{font-size:9mm;line-height:1;width:auto;height:auto}
-.lxp-car{break-before:page;page-break-before:always}
-.lxp-cartas{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm 0;justify-items:center}
-.lxp-k{width:56mm;height:56mm;border-radius:50%;border:.5mm dashed #666;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5mm;break-inside:avoid;box-sizing:border-box}
-.lxp-kd{width:30mm;height:30mm;object-fit:contain;border-radius:50%;display:block}
-.lxp-kd.e{font-size:19mm;line-height:1;width:auto;height:auto}
-.lxp-k b{font-size:5.5mm}
-.lxp-pie{margin-top:8mm;font-size:9pt;color:#666}
+
+/* ---- impresión a juego con la pantalla ---- */
+#lxImpr{display:none}
+#lxImpr.lxp-vista{display:block;position:fixed;inset:0;z-index:2147483200;background:#cfd6cf;overflow:auto;padding:12px 0}
+.lxp-pg{position:relative;width:210mm;height:297mm;margin:0 auto 12px;padding:9mm 11mm 10mm;box-sizing:border-box;overflow:hidden;background:linear-gradient(180deg,#FFF3D3 0%,#F9DFA6 100%);font-family:Nunito,system-ui,sans-serif;color:#2b2415;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.lxp-vista .lxp-pg{box-shadow:0 2px 14px rgba(0,0,0,.25)}
+.lxp-cab{display:flex;align-items:center;gap:5mm;padding:3.5mm 6mm;border-radius:6mm;background:linear-gradient(180deg,#34733F 0%,#235534 100%);border-bottom:1.2mm solid #F0B93A;box-shadow:0 1mm 0 rgba(20,60,30,.35)}
+.lxp-lg{width:15mm;height:15mm;border-radius:50%;box-shadow:0 0 0 .6mm #F0B93A;display:block}
+.lxp-tt{flex:1;display:flex;flex-direction:column}
+.lxp-tt b{font-family:'Fredoka One',Nunito,system-ui,sans-serif;font-size:7.5mm;letter-spacing:.3mm;color:#FFD566;line-height:1.05}
+.lxp-tt span{font-size:4mm;font-weight:700;color:#FFF3D3}
+.lxp-cm{width:15mm;height:15mm;border-radius:22%;display:block}
+.lxp-ins{margin:3.5mm 0 3mm;text-align:center;font-size:4.2mm;font-weight:700;color:#7a4a12}
+.lxp-aro1{width:188mm;height:188mm;margin:8mm auto 0;border-radius:50%;padding:3.5mm;box-sizing:border-box;background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 40%),linear-gradient(180deg,#E3A94E 0%,#C98B3A 30%,#9A6425 85%,#70440F 100%);box-shadow:0 1.4mm 0 rgba(90,50,10,.45),0 2mm 4mm rgba(60,35,10,.3)}
+.lxp-aro2{width:100%;height:100%;border-radius:50%;padding:1.6mm;box-sizing:border-box;background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 50%),linear-gradient(180deg,#FFF0BF 0%,#F5D98F 35%,#D9AE55 75%,#B48535 100%)}
+.lxp-disco{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;background:linear-gradient(90deg,rgba(90,60,15,.28) .5mm,transparent .5mm) 0 0/17mm 17mm,linear-gradient(rgba(90,60,15,.28) .5mm,transparent .5mm) 0 0/17mm 17mm,conic-gradient(#E8C679 25%,#A5C96F 0 50%,#E8C679 0 75%,#A5C96F 0) 0 0/34mm 34mm;box-shadow:inset 1.4mm 1.4mm 5mm rgba(90,60,10,.3)}
+.lxp-cel{position:absolute;width:12%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.5) 0%,transparent 50%),linear-gradient(180deg,#FFFBEF 0%,#F6E6BE 100%);border:.5mm solid #fff;border-bottom-color:#DDBF84;border-right-color:#DDBF84;box-shadow:0 .9mm 0 rgba(140,90,30,.4),0 1.4mm 2mm rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden}
+.lxp-cel.vac{background:linear-gradient(180deg,rgba(255,251,239,.55),rgba(246,230,190,.55));border:.5mm dashed rgba(122,74,18,.55);box-shadow:inset 0 .6mm 1.2mm rgba(90,60,10,.25)}
+.lxp-d{width:84%;height:84%;object-fit:contain;border-radius:50%;display:block;mix-blend-mode:multiply}
+.lxp-d.e{font-size:9mm;line-height:1;width:auto;height:auto;mix-blend-mode:normal}
+.lxp-fichas{display:grid;grid-template-columns:repeat(7,1fr);gap:4mm 2mm;justify-items:center;margin-top:6mm}
+.lxp-f{width:21mm;height:21mm;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.5) 0%,transparent 50%),linear-gradient(180deg,#FFFBEF 0%,#F6E6BE 100%);border:.6mm dashed #8a6a30;display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden}
+.lxp-fd{width:84%;height:84%;object-fit:contain;border-radius:50%;display:block;mix-blend-mode:multiply}
+.lxp-fd.e{font-size:9.5mm;line-height:1;width:auto;height:auto;mix-blend-mode:normal}
+.lxp-cartas{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm 0;justify-items:center;margin-top:5mm}
+.lxp-k{width:56mm;height:56mm;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,.55) 0%,transparent 50%),linear-gradient(180deg,#FFFBEF 0%,#F6E6BE 100%);border:.7mm dashed #8a6a30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5mm;box-sizing:border-box}
+.lxp-kd{width:30mm;height:30mm;object-fit:contain;border-radius:50%;display:block;mix-blend-mode:multiply}
+.lxp-kd.e{font-size:19mm;line-height:1;width:auto;height:auto;mix-blend-mode:normal}
+.lxp-k b{font-family:'Fredoka One',Nunito,system-ui,sans-serif;font-weight:400;font-size:6.4mm;color:#235534}
+.lxp-pie{position:absolute;left:11mm;right:11mm;bottom:6mm;text-align:center;font-size:2.9mm;color:#7a6a52}
+/* ahorrar tinta */
+.lxp-eco .lxp-pg{background:#fff}
+.lxp-eco .lxp-cab{background:#fff;border:.4mm solid #235534;border-bottom-width:1mm;box-shadow:none}
+.lxp-eco .lxp-tt b{color:#235534}.lxp-eco .lxp-tt span{color:#555}
+.lxp-eco .lxp-aro1,.lxp-eco .lxp-aro2{background:#fff;box-shadow:none;border:.5mm solid #8a6a30}
+.lxp-eco .lxp-disco{background:#fff;box-shadow:none}
+.lxp-eco .lxp-cel,.lxp-eco .lxp-f,.lxp-eco .lxp-k{background:#fff;box-shadow:none;border:.4mm solid #666}
+.lxp-eco .lxp-cel.vac{background:#fff;border:.4mm dashed #888}
+.lxp-eco .lxp-ins{color:#555}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  body>*:not(#lxImpr){display:none!important}
+  body::before,body::after{display:none!important}
+  #lxImpr{display:block}
+  .lxp-pg{margin:0;page-break-after:always;break-after:page}
+  .lxp-pg:last-child{page-break-after:auto;break-after:auto}
+}
