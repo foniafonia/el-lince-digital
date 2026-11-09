@@ -133,7 +133,7 @@
   }
   function barras(items,opt){
     opt=opt||{}; if(!items.length) return '<p class="lxi-vacio">Todavía no hay datos suficientes.</p>';
-    var W=opt.W||620,fila=26,H=items.length*fila+8,pl=opt.pl||190,pr=opt.pr||60,mx=opt.max||Math.max.apply(null,items.map(function(i){return i.v}))||1;
+    var W=opt.W||620,fila=26,H=items.length*fila+8,pl=opt.pl||190,pr=opt.pr||115,mx=opt.max||Math.max.apply(null,items.map(function(i){return i.v}))||1;
     var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opt.t||'')+'">';
     items.forEach(function(it,k){ var y=4+k*fila, w=(W-pl-pr)*it.v/mx;
       s+='<text x="'+(pl-8)+'" y="'+(y+16)+'" font-size="13" text-anchor="end" fill="#10231A">'+esc(it.l)+'</text><rect x="'+pl+'" y="'+(y+3)+'" width="'+Math.max(2,w).toFixed(1)+'" height="17" rx="4" fill="'+(it.c||VERDE)+'"/><text x="'+(pl+Math.max(2,w)+6).toFixed(1)+'" y="'+(y+16)+'" font-size="12" fill="#4d6457">'+esc(it.t)+'</text>'; });
@@ -151,7 +151,7 @@
     if(a.cv!=null) L.push('La variabilidad del tiempo de respuesta dentro de una sesión es '+(a.cv<0.4?'baja':a.cv<0.7?'media':'alta')+' (coeficiente '+a.cv.toFixed(2).replace('.',',')+').');
     if(a.deriva!=null) L.push(a.deriva>15?'En la segunda mitad de la sesión tarda un '+Math.round(a.deriva)+' % más que en la primera (posible cansancio o bajada de atención).':a.deriva<-15?'En la segunda mitad de la sesión es un '+Math.round(-a.deriva)+' % más rápido (se va ajustando a la tarea).':'El ritmo se mantiene parecido de principio a fin de la sesión.');
     if(a.rapidos) L.push(a.rapidos===1?'1 toque equivocado vino en menos de 0,7 s tras el anterior (respuesta muy rápida, posible impulsividad).':a.rapidos+' de los toques equivocados vinieron en menos de 0,7 s tras el anterior (respuestas muy rápidas, posible impulsividad).');
-    if(a.persev) L.push('Hubo '+a.persev+' veces en que repitió el mismo error en la misma palabra.');
+    if(a.persev) L.push(a.persev===1?'Hubo 1 vez en que repitió el mismo error en la misma palabra.':'Hubo '+a.persev+' veces en que repitió el mismo error en la misma palabra.');
     var ps=a.porSes; if(ps.length>=2){ var p=ps[0],u=ps[ps.length-1]; if(p.med&&u.med) L.push('Entre la primera y la última sesión, el tiempo mediano pasa de '+seg(p.med)+' a '+seg(u.med)+' y los aciertos a la primera de '+p.ok1+' % a '+u.ok1+' %.'); }
     return L;
   }
