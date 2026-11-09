@@ -32,3 +32,29 @@ body.lx-aoido .target-card-inner::after{content:'🔊';position:absolute;inset:0
 .lx-jugar:active img{content:url(portada/boton-jugar-pulsado.webp)}
 
 #playAgainBtn{display:flex;margin:0 auto}
+
+/* ===================== ASPECTO LINCE (a juego con la carátula) ===================== */
+:root{
+  --bg-top:#FFF3D3; --bg-middle:#F9DFA6; --bg-bottom:#F1C879;
+  --panel-bg:linear-gradient(180deg,#34733F 0%,#235534 100%); --panel-border:#F0B93A;
+  --board-surface:#B5D083; --board-surface-light:#CFE3A4; --board-surface-dark:#9DBD6B;
+  --board-rim-outer:#C98B3A; --board-rim-inner:#F5D98F;
+  --tile-top:#FFFBEF; --tile-bottom:#F6E6BE; --tile-border-light:#FFFFFF; --tile-border-dark:#DDBF84;
+  --tile-shadow-color:rgba(140,90,30,.38);
+}
+body::before{background-image:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(255,255,255,.55) 0%,transparent 60%),radial-gradient(circle at center,rgba(160,110,40,.07) 1px,transparent 1px)}
+body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(120,70,10,.12) 100%)}
+.top-panel{border-bottom:4px solid #F0B93A;box-shadow:0 4px 0 rgba(20,60,30,.35),0 8px 22px rgba(60,40,10,.25),inset 0 1px 0 rgba(255,255,255,.18)}
+.logo-title{color:#FFD566!important;font-size:1.5rem!important}
+.logo-icon{display:inline-block;width:44px;height:44px;border-radius:50%;background:url(portada/lince-logo.webp) center/cover no-repeat;font-size:0!important;box-shadow:0 0 0 2px #F0B93A,0 3px 6px rgba(0,0,0,.35)}
+.board-felt{--S:clamp(90px,17vmin,140px);background:linear-gradient(90deg,rgba(90,60,15,.28) 3px,transparent 3px) 0 0/calc(var(--S)/2) calc(var(--S)/2),linear-gradient(rgba(90,60,15,.28) 3px,transparent 3px) 0 0/calc(var(--S)/2) calc(var(--S)/2),conic-gradient(#E8C679 25%,#A5C96F 0 50%,#E8C679 0 75%,#A5C96F 0) 0 0/var(--S) var(--S)!important;box-shadow:inset 6px 6px 26px rgba(90,60,10,.3),inset -4px -4px 18px rgba(255,255,255,.12)!important}
+.board-felt::before{background-image:radial-gradient(ellipse 55% 35% at 28% 18%,rgba(255,255,255,.28) 0%,transparent 70%)!important;background-size:100% 100%!important}
+.board-outer-ring{background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 40%),linear-gradient(180deg,#E3A94E 0%,#C98B3A 30%,#9A6425 85%,#70440F 100%)!important;box-shadow:0 10px 0 rgba(90,50,10,.45),0 12px 25px rgba(60,35,10,.35),inset 0 3px 0 rgba(255,255,255,.2),inset 0 -4px 0 rgba(0,0,0,.3)!important}
+.board-inner-ring{background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 50%),linear-gradient(180deg,#FFF0BF 0%,#F5D98F 35%,#D9AE55 75%,#B48535 100%)!important}
+.cell{border-radius:30%!important}
+.cell.found{background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 50%),linear-gradient(180deg,#FFF1A8 0%,#FFD24A 100%)!important;border-color:#F0B93A!important;border-bottom-color:#C98B12!important;border-right-color:#C98B12!important;box-shadow:0 4px 0 #C98B12,0 6px 15px rgba(240,185,58,.5),0 0 26px rgba(255,214,90,.55)!important}
+.target-card-inner{border:3px solid #F0B93A!important}
+.end-screen{background:radial-gradient(ellipse at center,rgba(40,95,55,.93),rgba(18,55,32,.97))!important}
+.end-content{background:linear-gradient(180deg,#FFFBEF,#FBE9BE)!important;border-color:#F0B93A!important}
+.end-title{color:#C46A0C!important;-webkit-text-fill-color:#C46A0C!important;background:none!important;text-shadow:0 2px 0 rgba(255,255,255,.7)!important}
+.end-stat{background:linear-gradient(180deg,#34733F,#235534)!important}
