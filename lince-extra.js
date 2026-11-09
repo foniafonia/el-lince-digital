@@ -159,7 +159,7 @@
   var OPC={lleno:true,vacio:true,fichas:true,cartas:true,tinta:false};
   try{ var og=JSON.parse(localStorage.getItem('lince-imprimir')||'{}'); for(var ko in og) if(ko in OPC) OPC[ko]=og[ko]; }catch(e){}
   function cab(sub){ return '<header class="lxp-cab"><img class="lxp-lg" src="portada/lince-logo.webp" alt=""><div class="lxp-tt"><b>EL LINCE DIGITAL</b><span>'+sub+'</span></div><img class="lxp-cm" src="portada/colmenia-logo.webp" alt=""></header>'; }
-  function pie(modo){ return '<footer class="lxp-pie">Gabinete Fönia · ColmenIA · foniafonia.github.io/el-lince-digital'+(modo==='picto'?' · Pictos propios de Fönia (CC0), hechos con IA':'')+' · Material de apoyo: no sustituye a la logopeda.</footer>'; }
+  function pie(modo){ return '<footer class="lxp-pie">Gabinete Fönia · ColmenIA · Más juegos y materiales en la comunidad: skool.com/logopedia-7339 · foniafonia.github.io/el-lince-digital'+(modo==='picto'?' · Pictos propios de Fönia (CC0), hechos con IA':'')+' · Material de apoyo: no sustituye a la logopeda.</footer>'; }
   function disco(celdas){ return '<div class="lxp-aro1"><div class="lxp-aro2"><div class="lxp-disco">'+celdas+'</div></div></div>'; }
   function paginas(tab,modo,o){
     var P1=[], n=tab.length;
@@ -216,8 +216,7 @@
    '<button class="lx-crea" id="lxCreaB" type="button">✏️ Crea tu propio Lince (con emojis o pictos)</button>'+
    '<button class="lx-pidebtn" id="lxImpP" type="button">🖨️ Imprimir tablero y cartas</button>'+
    '<button class="lx-pidebtn" id="lxPideP" type="button">💬 ¿Qué picto te falta?</button>'+
-   '<a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">🐝 Más juegos en la comunidad ColmenIA</a>'+
-   '<a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo en la comunidad</a>'+
+   '<div class="lx-puente"><b>🐝 ColmenIA, la comunidad de logopedas</b><p>Aquí creamos juegos y materiales como este, con lo que nos pedís. Las versiones nuevas (más pictos, más funciones) llegan por niveles a quien está dentro.</p><a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">Entrar en la comunidad</a><a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo</a></div>'+
    '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
    '</div></div>';
   /* ---- ajustes ---- */

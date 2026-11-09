@@ -219,3 +219,10 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
   .lxp-pg{margin:0;page-break-after:always;break-after:page}
   .lxp-pg:last-child{page-break-after:auto;break-after:auto}
 }
+
+.lx-puente{margin:14px auto 0;max-width:460px;padding:12px 14px;border-radius:16px;background:rgba(255,248,231,.92);border:2px solid #F4B93A;text-align:center;color:#25352b}
+.lx-puente b{display:block;font:800 16px Nunito,system-ui,sans-serif;color:#1f5a3a;margin-bottom:4px}
+.lx-puente p{margin:0 0 8px;font:600 14px/1.4 Nunito,system-ui,sans-serif}
+.lxi-puente{max-width:820px;margin:-24px auto 40px;padding:14px 18px;border-radius:14px;background:#fff8e7;border:2px solid #F4B93A;font:600 15px/1.45 Nunito,system-ui,sans-serif;color:#25352b;text-align:center}
+.lxi-puente a.lx-cta{margin-top:8px}
+@media print{.lxi-puente{display:none!important}}

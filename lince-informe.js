@@ -210,8 +210,9 @@
     var c=actual();
     cierraSesion(); if(D.on&&!S&&false){}
     var a=analiza(c.sesiones);
-    inf.innerHTML='<div class="lxi-barra"><button type="button" id="lxiImp" class="lxi-prim">🖨️ Imprimir o guardar en PDF</button><button type="button" id="lxiCsv">⬇️ Datos (CSV)</button><button type="button" id="lxiTxt">📋 Copiar resumen</button><button type="button" id="lxiCerrar">Cerrar</button></div><div class="lxi-hoja" id="lxiHoja">'+informeHTML(D.caso||'',c,a)+'</div>';
+    inf.innerHTML='<div class="lxi-barra"><button type="button" id="lxiImp" class="lxi-prim">🖨️ Imprimir o guardar en PDF</button><button type="button" id="lxiCsv">⬇️ Datos (CSV)</button><button type="button" id="lxiTxt">📋 Copiar resumen</button><button type="button" id="lxiCerrar">Cerrar</button></div><div class="lxi-hoja" id="lxiHoja">'+informeHTML(D.caso||'',c,a)+'</div><div class="lxi-puente"><b>¿Te ha servido el informe?</b><br>En ColmenIA, la comunidad de logopedas, lo vamos mejorando con lo que nos pedís. Las versiones nuevas llegan por niveles a quien está dentro.<br><a class="lx-cta" id="lxiSk" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">Entrar en la comunidad</a></div>';
     inf.hidden=false; inf.scrollTop=0; document.body.classList.add('lxi-abierto'); cuenta('informe_ver');
+    $('lxiSk').onclick=function(){ cuenta('skool_informe'); };
     $('lxiCerrar').onclick=function(){ inf.hidden=true; document.body.classList.remove('lxi-abierto'); };
     $('lxiImp').onclick=function(){ cuenta('informe_imprimir'); window.print(); };
     $('lxiCsv').onclick=function(){ cuenta('informe_csv'); baja('lince-'+(D.caso||'sin-codigo').replace(/[^a-z0-9_-]/gi,'_')+'.csv','﻿'+csv(c,D.caso||'sin-codigo'),'text/csv;charset=utf-8'); };
