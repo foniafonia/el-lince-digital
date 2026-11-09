@@ -2,9 +2,10 @@
   var Q=new URLSearchParams(location.search);
   function cuenta(k){ if(window.linceCuenta) window.linceCuenta(k); }
   /* ---- ajustes (se guardan solo en este aparato) ---- */
-  var A={voz:true,volumen:'normal',busca:false,aoido:false};
+  var A={voz:true,volumen:'normal',busca:false,aoido:false,dibujos:'emoji'};
   try{ var g=JSON.parse(localStorage.getItem('lince-ajustes')||'{}'); for(var k in g) if(k in A) A[k]=g[k]; }catch(e){}
   if(Q.get('modo')==='audio') A.aoido=true;
+  if(Q.get('dibujos')==='picto'||Q.get('dibujos')==='emoji') A.dibujos=Q.get('dibujos');
   function guarda(){ try{localStorage.setItem('lince-ajustes',JSON.stringify(A));}catch(e){} aplica(); }
   function aplica(){ document.body.classList.toggle('lx-aoido',!!A.aoido); }
   /* ---- voz Ximena (voz/*.mp3) ---- */
@@ -25,6 +26,92 @@
   }
   var cartaNombre=function(){ var n=document.getElementById('targetName'); return n?n.textContent:''; };
   function diObjetivo(){ var t=cartaNombre(); if(t) di(slug(t)); }
+
+  /* ---- pictos propios y «Crea tu Lince» ---- */
+  var P=window.LX_PICTO||{}; var SEL=null;
+  (function(){ var s=Q.get('sel'); if(s){ SEL=s.split('.').map(function(x){return parseInt(x,36)}).filter(function(n){return n>=0}); if(!SEL.length) SEL=null; } })();
+  function DB(){ return (typeof itemDatabase!=='undefined')?itemDatabase:[]; }
+  function modoPicto(){ return A.dibujos==='picto'; }
+  var f0=window.filterItems;
+  if(typeof f0==='function'){
+    window.filterItems=function(){
+      var db=DB(), r;
+      if(SEL){ r=db.filter(function(it,i){return SEL.indexOf(i)>-1}); } else r=f0();
+      if(modoPicto()) r=r.filter(function(it){return !!P[it.name]});
+      return r;
+    };
+  }
+  function pinta(span){
+    if(!span) return;
+    var e=span.textContent.trim();
+    if(!modoPicto()){ span.classList.remove('lx-pic'); span.style.backgroundImage=''; return; }
+    var it=DB().find(function(x){return x.emoji===e && P[x.name]});
+    if(it){ span.classList.add('lx-pic'); span.style.backgroundImage='url(picto/'+P[it.name]+'.webp)'; }
+  }
+  function pintaTodo(){ document.querySelectorAll('.cell-emoji').forEach(pinta); pinta(document.getElementById('targetEmoji')); }
+  function dibujoHTML(it,modo){ return (modo==='picto' && P[it.name]) ? '<span class="lx-d lx-pic" style="background-image:url(picto/'+P[it.name]+'.webp)"></span>' : '<span class="lx-d">'+it.emoji+'</span>'; }
+  var S=new Set(SEL||[]);
+  function sonidos(){ var s={}; DB().forEach(function(it){ (it.phonemes||[]).forEach(function(p){s[p]=1}); }); return Object.keys(s).sort(); }
+  var crea=document.createElement('div'); crea.className='lx-ajp'; crea.hidden=true;
+  function montaCrea(){
+    crea.innerHTML='<div class="lx-caja lx-ancha" role="dialog" aria-label="Crea tu Lince"><h2>✏️ Crea tu propio Lince</h2>'+
+     '<p class="lx-peque">Elige las palabras que quieres que salgan en el tablero. Puedes jugar tú o mandar el enlace.</p>'+
+     '<div class="lx-filtros"><label>Dibujos <select id="lxCDib"><option value="emoji">Emojis</option><option value="picto">Pictos de Fönia</option></select></label>'+
+     '<label>Sonido <select id="lxCSon"><option value="">Todos</option>'+sonidos().map(function(s){return '<option value="'+s+'">/'+s.toUpperCase()+'/</option>'}).join('')+'</select></label>'+
+     '<label>Tipo <select id="lxCCat"><option value="">Todos</option><option value="animales">Animales</option><option value="objetos">Objetos</option><option value="comida">Comida</option><option value="transportes">Transportes</option><option value="naturaleza">Naturaleza</option></select></label></div>'+
+     '<input id="lxBus" type="search" placeholder="Buscar una palabra…" autocomplete="off">'+
+     '<div class="lx-cuenta"><b id="lxN">0</b> elegidas <button type="button" id="lxTodas">Marcar las que se ven</button><button type="button" id="lxNinguna">Quitar todas</button></div>'+
+     '<div class="lx-rejilla" id="lxRej"></div>'+
+     '<p class="lx-peque" id="lxAviso"></p>'+
+     '<div class="lx-botones"><button type="button" class="lx-prim" id="lxJugarSel">▶ Jugar con mi Lince</button><button type="button" id="lxCopiar">🔗 Copiar enlace</button><button type="button" id="lxCerrarC">Cerrar</button></div></div>';
+    var $=function(i){return crea.querySelector('#'+i)};
+    $('lxCDib').value=A.dibujos;
+    function avisos(){
+      var modo=$('lxCDib').value, av=[];
+      if(modo==='picto') av.push('Pictos de Fönia: hechos con IA, pendientes de revisión de una logopeda (CC0). Hay dibujo para '+Object.keys(P).length+' palabras.');
+      if(S.size>37) av.push('El tablero tiene 37 casillas: saldrán 37 de tus palabras, al azar, en cada partida.');
+      if(S.size>0 && S.size<4) av.push('Elige al menos 4 palabras.');
+      $('lxN').textContent=S.size; $('lxAviso').textContent=av.join(' ');
+    }
+    function lista(){
+      var q=$('lxBus').value.trim().toLowerCase(), so=$('lxCSon').value, ca=$('lxCCat').value, modo=$('lxCDib').value, h='';
+      var db=DB(); var vis=0;
+      db.forEach(function(it,i){
+        if(modo==='picto' && !P[it.name]) return;
+        if(q && it.name.toLowerCase().indexOf(q)<0) return;
+        if(so && !(it.phonemes&&it.phonemes.indexOf(so)>-1)) return;
+        if(ca && it.cat!==ca) return;
+        vis++;
+        h+='<label class="lx-it'+(S.has(i)?' on':'')+'"><input type="checkbox" data-i="'+i+'"'+(S.has(i)?' checked':'')+'>'+dibujoHTML(it,modo)+'<b>'+it.name+'</b></label>';
+      });
+      $('lxRej').innerHTML=h||'<p class="lx-peque">No hay palabras con ese filtro.</p>';
+      $('lxN').textContent=S.size;
+      avisos();
+    }
+    crea.lista=lista;
+    crea.addEventListener('change',function(e){ var c=e.target; if(c.matches&&c.matches('input[type=checkbox][data-i]')){ var i=+c.getAttribute('data-i'); if(c.checked) S.add(i); else S.delete(i); c.parentNode.classList.toggle('on',c.checked); avisos(); } });
+    ['lxBus','lxCSon','lxCCat'].forEach(function(id){ $(id).addEventListener(id==='lxBus'?'input':'change',lista); });
+    $('lxCDib').addEventListener('change',function(){ lista(); });
+    $('lxTodas').onclick=function(){ crea.querySelectorAll('#lxRej input[data-i]').forEach(function(c){ S.add(+c.getAttribute('data-i')); }); lista(); };
+    $('lxNinguna').onclick=function(){ S.clear(); lista(); };
+    $('lxCerrarC').onclick=function(){ crea.hidden=true; };
+    crea.onclick=function(e){ if(e.target===crea) crea.hidden=true; };
+    function url(){ var u=location.origin+location.pathname+'?sel='+Array.from(S).sort(function(a,b){return a-b}).map(function(n){return n.toString(36)}).join('.')+'&dibujos='+$('lxCDib').value; var c=Q.get('c'); if(c) u+='&c='+encodeURIComponent(c); return u; }
+    $('lxCopiar').onclick=function(){
+      if(S.size<4){ $('lxAviso').textContent='Elige al menos 4 palabras para crear el enlace.'; return; }
+      var u=url(); cuenta('crea_enlace');
+      var ok=function(){ $('lxAviso').textContent='Enlace copiado. Ya lo puedes pegar en WhatsApp.'; };
+      if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(ok,function(){ window.prompt('Copia este enlace:',u); }); else window.prompt('Copia este enlace:',u);
+    };
+    $('lxJugarSel').onclick=function(){
+      if(S.size<4){ $('lxAviso').textContent='Elige al menos 4 palabras.'; return; }
+      SEL=Array.from(S); A.dibujos=$('lxCDib').value; guarda(); cuenta('crea_jugar'); crea.hidden=true; empieza();
+    };
+    lista();
+  }
+  function abreCrea(){ if(!crea.firstChild) montaCrea(); else { crea.querySelector('#lxCDib').value=A.dibujos; crea.lista(); } crea.hidden=false; cuenta('crea_abrir'); }
+  function empieza(){ velo.hidden=true; try{ if(typeof resetGame==='function') resetGame(); }catch(e){} pintaTodo(); }
+
   /* ---- carátula ---- */
   var velo=document.createElement('div'); velo.className='lx-velo'; velo.id='lxPortada';
   velo.innerHTML=
@@ -34,6 +121,7 @@
    '<div class="lx-cuerpo"><h1>🐱 El Lince Digital</h1>'+
    '<p>El lince pide un dibujo y hay que encontrarlo en el tablero. Cada dibujo trabaja un sonido. Se oye cómo se dice.</p>'+
    '<button class="lx-jugar" id="lxJugar" type="button" aria-label="Jugar ya"><img src="portada/boton-jugar.webp" width="720" height="240" alt="" onerror="this.parentNode.classList.add(\'lx-sinimg\')"><span class="lx-txt">▶ Jugar</span></button>'+
+   '<button class="lx-crea" id="lxCreaB" type="button">✏️ Crea tu propio Lince (con emojis o pictos)</button>'+
    '<a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">🐝 Más juegos en la comunidad ColmenIA</a>'+
    '<a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo en la comunidad</a>'+
    '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
@@ -43,6 +131,7 @@
   var ap=document.createElement('div'); ap.className='lx-ajp'; ap.hidden=true;
   ap.innerHTML='<div class="lx-caja" role="dialog" aria-label="Ajustes"><h2>⚙️ Ajustes (logopeda)</h2>'+
    '<div class="lx-fila"><label for="lxVoz">Voz<small>Dice cada palabra en voz alta.</small></label><input type="checkbox" id="lxVoz"></div>'+
+   '<div class="lx-fila"><label for="lxDib">Dibujos<small>Emojis o pictos propios de Fönia.</small></label><select id="lxDib"><option value="emoji">Emojis</option><option value="picto">Pictos</option></select></div>'+
    '<div class="lx-fila"><label for="lxVol">Volumen</label><select id="lxVol"><option value="normal">Normal</option><option value="alto">Alto</option></select></div>'+
    '<div class="lx-fila"><label for="lxBusca">Decir «El lince busca…»<small>Antes de cada palabra.</small></label><input type="checkbox" id="lxBusca"></div>'+
    '<div class="lx-fila"><label for="lxOido">A oído<small>Esconde la palabra escrita: solo se oye.</small></label><input type="checkbox" id="lxOido"></div>'+
@@ -52,7 +141,7 @@
   function monta(){
     document.body.appendChild(ab); document.body.appendChild(ob); document.body.appendChild(ap); document.body.appendChild(velo);
     var $=function(i){return document.getElementById(i)};
-    $('lxVoz').checked=A.voz; $('lxVol').value=A.volumen; $('lxBusca').checked=A.busca; $('lxOido').checked=A.aoido; aplica();
+    $('lxVoz').checked=A.voz; $('lxVol').value=A.volumen; $('lxBusca').checked=A.busca; $('lxOido').checked=A.aoido; $('lxDib').value=A.dibujos; aplica();
     ab.onclick=function(){ap.hidden=false};
     $('lxCerrar').onclick=function(){ap.hidden=true};
     ap.onclick=function(e){ if(e.target===ap) ap.hidden=true };
@@ -60,18 +149,25 @@
     $('lxVol').onchange=function(){A.volumen=this.value;guarda()};
     $('lxBusca').onchange=function(){A.busca=this.checked;guarda()};
     $('lxOido').onchange=function(){A.aoido=this.checked;guarda()};
+    $('lxDib').onchange=function(){A.dibujos=this.value;guarda(); if(velo.hidden){ try{resetGame()}catch(e){} } pintaTodo(); };
+    document.body.appendChild(crea);
+    $('lxCreaB').onclick=abreCrea;
     ob.onclick=function(){ diObjetivo(); };
     var tc=$('targetCard'); if(tc) tc.addEventListener('click',diObjetivo);
     velo.querySelectorAll('a[data-sk]').forEach(function(a){ a.addEventListener('click',function(){cuenta('skool_'+a.getAttribute('data-sk'))}); });
+    document.querySelectorAll('.category-pill,.phoneme-pill').forEach(function(p){ p.addEventListener('click',function(){ SEL=null; },true); });
     $('lxJugar').onclick=function(){
-      velo.hidden=true; cuenta('jugar');
-      try{ if(typeof resetGame==='function') resetGame(); }catch(e){}
+      cuenta('jugar'); if(modoPicto()) cuenta('jugar_picto'); if(SEL) cuenta('jugar_sel');
+      empieza();
     };
     /* di la palabra cada vez que cambia el objetivo (y la sigue diciendo si se pulsa la carta) */
     var n=$('targetName'), tmr=null;
     if(n && window.MutationObserver){
       new MutationObserver(function(){ if(!velo.hidden) return; clearTimeout(tmr); tmr=setTimeout(diObjetivo,220); }).observe(n,{childList:true,characterData:true,subtree:true});
     }
+    var bd=document.querySelector('.board'); if(bd&&window.MutationObserver) new MutationObserver(function(){ if(modoPicto()) document.querySelectorAll('.cell-emoji').forEach(pinta); }).observe(bd,{childList:true,subtree:true});
+    var te=$('targetEmoji'); if(te&&window.MutationObserver) new MutationObserver(function(){ pinta(te); }).observe(te,{childList:true,characterData:true,subtree:true});
+    if(SEL){ var np=velo.querySelector('.lx-nota'); if(np) np.insertAdjacentHTML('beforebegin','<p style="font-weight:800;color:#9a4b0b">Partida preparada: '+SEL.length+' palabras.</p>'); }
     var fin=$('endScreen');
     if(fin && window.MutationObserver){
       new MutationObserver(function(){ if(fin.classList.contains('show')) di('_completo',true); }).observe(fin,{attributes:true,attributeFilter:['class']});

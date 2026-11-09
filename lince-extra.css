@@ -58,3 +58,25 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
 .end-content{background:linear-gradient(180deg,#FFFBEF,#FBE9BE)!important;border-color:#F0B93A!important}
 .end-title{color:#C46A0C!important;-webkit-text-fill-color:#C46A0C!important;background:none!important;text-shadow:0 2px 0 rgba(255,255,255,.7)!important}
 .end-stat{background:linear-gradient(180deg,#34733F,#235534)!important}
+
+/* ---- pictos y «Crea tu Lince» ---- */
+.lx-pic{font-size:0!important;color:transparent;background-size:contain;background-repeat:no-repeat;background-position:center;mix-blend-mode:multiply;display:block}
+.cell-emoji.lx-pic{width:calc(var(--cell-size)*.82);height:calc(var(--cell-size)*.82)}
+#targetEmoji.lx-pic{width:46px;height:46px}
+.lx-crea{display:block;margin:0 auto 10px;padding:11px 18px;border:2px solid #C98B3A;border-radius:14px;background:#FFF3D3;color:#7a4a12;font:800 16px Nunito,system-ui,sans-serif;cursor:pointer}
+.lx-ancha{max-width:760px!important}
+.lx-peque{font-size:13px;color:#4d6457;margin:6px 0}
+.lx-filtros{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+.lx-filtros label{font-size:14px;font-weight:700}
+.lx-caja input[type=search]{width:100%;font:inherit;padding:9px 11px;border:1px solid #cdd8cf;border-radius:10px;margin:4px 0 8px}
+.lx-cuenta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;margin:4px 0 8px}
+.lx-cuenta button,.lx-botones button{font:700 14px Nunito,system-ui,sans-serif;padding:8px 12px;border-radius:10px;border:1px solid #cdd8cf;background:#fff;cursor:pointer}
+.lx-rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:44vh;overflow:auto;padding:4px;border:1px solid #eef2ee;border-radius:12px;background:#FFFBEF}
+.lx-it{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border:2px solid #e8dcc0;border-radius:12px;background:#fff;cursor:pointer;position:relative;text-align:center}
+.lx-it.on{border-color:#2FA866;background:#EAF7EE}
+.lx-it input{position:absolute;top:4px;left:4px;width:18px;height:18px}
+.lx-it b{font-size:12px;line-height:1.1}
+.lx-d{display:block;width:54px;height:54px;font-size:38px;line-height:54px;text-align:center}
+.lx-d.lx-pic{width:60px;height:60px}
+.lx-botones{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.lx-botones .lx-prim{background:#2FA866;color:#fff;border-color:#2FA866;font-weight:800}
