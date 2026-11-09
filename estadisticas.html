@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>El Lince Digital · cuánta gente lo abre</title>
+<style>body{font:17px/1.5 system-ui,sans-serif;max-width:680px;margin:0 auto;padding:22px 16px 60px;background:#F3F5F2;color:#10231A}.c{display:flex;flex-wrap:wrap;margin:0 -5px}.k{flex:1 1 140px;margin:5px;background:#fff;border:1px solid #DCE6DE;border-radius:16px;padding:12px 14px}.k b{display:block;font-size:32px}.k span{font-size:14px;color:#4d6457}table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #DCE6DE}th,td{padding:8px 10px;text-align:right;border-bottom:1px solid #EEF2EE}th:first-child,td:first-child{text-align:left}</style></head><body>
+<h1>🐱 El Lince Digital</h1><p>Cuánta gente lo abre. Los números llegan poco a poco.</p>
+<div class="c"><div class="k"><b id="aperturas">…</b><span>veces abierto</span></div><div class="k"><b id="personas">…</b><span>aparatos distintos</span></div><div class="k"><b id="completados">…</b><span>tableros completados</span></div><div class="k"><b id="skool">…</b><span>toques a la comunidad</span></div></div>
+<h2>Por canal (veces abierto)</h2><table id="t"><tr><th>Canal</th><th>Aperturas</th></tr></table>
+<p style="font-size:14px;color:#4d6457">Canales: ?c=wa WhatsApp · tg Telegram · fb Facebook · ig Instagram · sk Skool · ln LinkedIn · ma grupo de maestras.</p>
+<script>
+var G='https://abacus.jasoncameron.dev/get/foniafonia-lince/';
+function leer(k,cb){fetch(G+k).then(function(r){return r.json()}).then(function(j){cb(j.value==null?0:j.value)}).catch(function(){cb(0)})}
+['aperturas','personas','completados','skool'].forEach(function(k,i){setTimeout(function(){leer('lince_'+k,function(v){document.getElementById(k).textContent=v})},i*400)});
+[['wa','WhatsApp'],['tg','Telegram'],['fb','Facebook'],['ig','Instagram'],['sk','Skool'],['ln','LinkedIn'],['ma','Grupo maestras']].forEach(function(c,i){setTimeout(function(){leer('lince_c_'+c[0]+'_aperturas',function(v){var r=document.getElementById('t').insertRow();r.insertCell().textContent=c[1];r.insertCell().textContent=v})},2000+i*400)});
+</script></body></html>
