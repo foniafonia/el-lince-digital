@@ -11,7 +11,7 @@ Salió del curso de AELFA (octubre de 2026). Aquí está como página suelta, ig
 - **Buzón «¿Qué picto te falta?»:** en la carátula, en ⚙️, en «Crea tu Lince» y al acabar. Toca una palabra sin picto o escribe otra: suma 1 a `lince_pide_<palabra>` o `lince_otra_<palabra>` (anónimo). Se lee en `estadisticas.html` («Pictos que piden»).
 - **Imprimir:** 🖨️ en la carátula, en ⚙️ y en «Crea tu Lince». Saca un A4 con el tablero (hasta 36 dibujos con su palabra) y las cartas para recortar (hasta 60), con emojis o pictos. Clave de contador `lince_imprimir`.
 - Contador anónimo: espacio `foniafonia-lince` en abacus. Claves `lince_aperturas`, `lince_personas`, `lince_completados`, `lince_skool` y por canal `lince_c_<canal>_aperturas`.
-- Canales: añadir `?c=wa|tg|fb|ig|sk|ln|ma` al enlace; `?yo=1` para que las visitas de José no cuenten.
+- Canales: añadir `?c=gw|wa|tg|fb|ma|ig|th|sk|ln` al enlace (gw grupos de WhatsApp, wa chats de WhatsApp, ma grupos de Facebook); `?yo=1` para que las visitas de José no cuenten.
 - Estadísticas: `estadisticas.html`. Privacidad: `privacidad.html`.
 - Material de apoyo: no sustituye a la logopeda.
 

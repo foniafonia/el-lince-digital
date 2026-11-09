@@ -12,10 +12,10 @@ function pideLee(i){ if(i>=FALTA.length){return;} fetch(G+'lince_pide_'+FALTA[i]
 function pinta(){ res.sort(function(a,b){return b[1]-a[1]}); var t=document.getElementById('pid'); res.forEach(function(x){ var r=t.insertRow(); r.insertCell().textContent=x[0]; r.insertCell().textContent=x[1]; }); document.getElementById('pidn').textContent=res.length?'':'Todavía nadie ha pedido ninguno.'; }
 setTimeout(function(){ for(var k=0;k<4;k++) pideLee(k); },3500);
 </script>
-<p style="font-size:14px;color:#4d6457">Canales: ?c=wa WhatsApp · tg Telegram · fb Facebook · ig Instagram · sk Skool · ln LinkedIn · ma grupo de maestras.</p>
+<p style="font-size:14px;color:#4d6457">Canales (se añaden al enlace): ?c=gw grupos de WhatsApp · wa chats de WhatsApp · tg Telegram · fb Facebook · ma grupos de Facebook · ig Instagram · th Threads · sk Skool · ln LinkedIn.</p>
 <script>
 var G='https://abacus.jasoncameron.dev/get/foniafonia-lince/';
 function leer(k,cb){fetch(G+k).then(function(r){return r.json()}).then(function(j){cb(j.value==null?0:j.value)}).catch(function(){cb(0)})}
 ['aperturas','personas','jugar','completados','skool','skool_portada','skool_idea_portada'].forEach(function(k,i){setTimeout(function(){leer('lince_'+k,function(v){document.getElementById(k).textContent=v})},i*400)});
-[['wa','WhatsApp'],['tg','Telegram'],['fb','Facebook'],['ig','Instagram'],['sk','Skool'],['ln','LinkedIn'],['ma','Grupo maestras']].forEach(function(c,i){setTimeout(function(){leer('lince_c_'+c[0]+'_aperturas',function(v){var r=document.getElementById('t').insertRow();r.insertCell().textContent=c[1];r.insertCell().textContent=v})},2000+i*400)});
+[['gw','Grupos de WhatsApp'],['wa','WhatsApp (chats)'],['tg','Telegram'],['fb','Facebook'],['ma','Grupos de Facebook'],['ig','Instagram'],['th','Threads'],['sk','Skool'],['ln','LinkedIn']].forEach(function(c,i){setTimeout(function(){leer('lince_c_'+c[0]+'_aperturas',function(v){var r=document.getElementById('t').insertRow();r.insertCell().textContent=c[1];r.insertCell().textContent=v})},2000+i*400)});
 </script></body></html>
