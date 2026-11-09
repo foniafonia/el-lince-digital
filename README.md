@@ -1,5 +1,7 @@
 # El Lince Digital
 
+**Jugar:** https://foniafonia.github.io/el-lince-digital/
+
 Juego de buscar: el lince pide un dibujo («ratón», «rana»…) y hay que encontrarlo en el tablero. Cada dibujo trabaja un sonido (/R/, /RR/, /S/, /L/, grupos como /BL/, /TR/…).
 Salió del curso de AELFA (octubre de 2026). Aquí está como página suelta, igual que Snake de palabras.
 
