@@ -80,3 +80,12 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
 .lx-d.lx-pic{width:60px;height:60px}
 .lx-botones{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
 .lx-botones .lx-prim{background:#2FA866;color:#fff;border-color:#2FA866;font-weight:800}
+
+.lx-chips{display:flex;flex-wrap:wrap;gap:6px;max-height:34vh;overflow:auto;padding:4px;border:1px solid #eef2ee;border-radius:12px;background:#FFFBEF}
+.lx-chip{font:700 13px Nunito,system-ui,sans-serif;padding:6px 9px;border-radius:999px;border:1.5px solid #e0c98e;background:#fff;cursor:pointer}
+.lx-chip.ya{background:#EAF7EE;border-color:#2FA866;color:#1E6B3F}
+.lx-otra{display:flex;gap:8px}
+.lx-otra input{flex:1;font:inherit;padding:9px 11px;border:1px solid #cdd8cf;border-radius:10px}
+.lx-otra button{font:800 14px Nunito,system-ui,sans-serif;padding:9px 14px;border-radius:10px;border:0;background:#2FA866;color:#fff;cursor:pointer}
+.lx-pidebtn{display:block;margin:0 auto 8px;padding:8px 14px;border:0;background:none;color:#7a4a12;font:700 14px Nunito,system-ui,sans-serif;text-decoration:underline;cursor:pointer}
+.end-content .lx-pidebtn{margin-top:6px}

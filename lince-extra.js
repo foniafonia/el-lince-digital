@@ -63,7 +63,7 @@
      '<div class="lx-cuenta"><b id="lxN">0</b> elegidas <button type="button" id="lxTodas">Marcar las que se ven</button><button type="button" id="lxNinguna">Quitar todas</button></div>'+
      '<div class="lx-rejilla" id="lxRej"></div>'+
      '<p class="lx-peque" id="lxAviso"></p>'+
-     '<div class="lx-botones"><button type="button" class="lx-prim" id="lxJugarSel">▶ Jugar con mi Lince</button><button type="button" id="lxCopiar">🔗 Copiar enlace</button><button type="button" id="lxCerrarC">Cerrar</button></div></div>';
+     '<div class="lx-botones"><button type="button" class="lx-prim" id="lxJugarSel">▶ Jugar con mi Lince</button><button type="button" id="lxCopiar">🔗 Copiar enlace</button><button type="button" id="lxPideC">💬 ¿Qué picto te falta?</button><button type="button" id="lxCerrarC">Cerrar</button></div></div>';
     var $=function(i){return crea.querySelector('#'+i)};
     $('lxCDib').value=A.dibujos;
     function avisos(){
@@ -95,6 +95,7 @@
     $('lxTodas').onclick=function(){ crea.querySelectorAll('#lxRej input[data-i]').forEach(function(c){ S.add(+c.getAttribute('data-i')); }); lista(); };
     $('lxNinguna').onclick=function(){ S.clear(); lista(); };
     $('lxCerrarC').onclick=function(){ crea.hidden=true; };
+    $('lxPideC').onclick=abrePide;
     crea.onclick=function(e){ if(e.target===crea) crea.hidden=true; };
     function url(){ var u=location.origin+location.pathname+'?sel='+Array.from(S).sort(function(a,b){return a-b}).map(function(n){return n.toString(36)}).join('.')+'&dibujos='+$('lxCDib').value; var c=Q.get('c'); if(c) u+='&c='+encodeURIComponent(c); return u; }
     $('lxCopiar').onclick=function(){
@@ -112,6 +113,29 @@
   function abreCrea(){ if(!crea.firstChild) montaCrea(); else { crea.querySelector('#lxCDib').value=A.dibujos; crea.lista(); } crea.hidden=false; cuenta('crea_abrir'); }
   function empieza(){ velo.hidden=true; try{ if(typeof resetGame==='function') resetGame(); }catch(e){} pintaTodo(); }
 
+  /* ---- buzón: «¿Qué picto te falta?» (contador anónimo, sin nombres) ---- */
+  var pide=document.createElement('div'); pide.className='lx-ajp'; pide.hidden=true;
+  var enviados={}; try{ enviados=JSON.parse(localStorage.getItem('lince-pedidos')||'{}'); }catch(e){}
+  function guardaPed(){ try{localStorage.setItem('lince-pedidos',JSON.stringify(enviados));}catch(e){} }
+  function sinPicto(){ var v={},r=[]; DB().forEach(function(it){ if(!P[it.name] && !v[it.name]){ v[it.name]=1; r.push(it);} }); return r; }
+  function montaPide(){
+    var chips=sinPicto().map(function(it){ var s=slug(it.name); return '<button type="button" class="lx-chip'+(enviados[s]?' ya':'')+'" data-s="'+s+'">'+it.emoji+' '+it.name+(enviados[s]?' ✓':'')+'</button>'; }).join('');
+    pide.innerHTML='<div class="lx-caja lx-ancha" role="dialog" aria-label="Qué picto te falta"><h2>💬 ¿Qué picto te falta?</h2>'+
+     '<p class="lx-peque">Toca las palabras que quieres ver con picto propio. Las que más pidan, las dibujamos antes. No hace falta ningún dato tuyo.</p>'+
+     '<div class="lx-chips" id="lxChips">'+chips+'</div>'+
+     '<p class="lx-peque" style="margin-top:12px"><b>¿Otra palabra?</b> Escríbela aquí (solo la palabra, sin nombres de personas):</p>'+
+     '<div class="lx-otra"><input id="lxOtra" type="text" maxlength="24" placeholder="por ejemplo: abrigo" autocomplete="off"><button type="button" id="lxOtraB">Pedir</button></div>'+
+     '<p class="lx-peque" id="lxPideMsg"></p>'+
+     '<p class="lx-peque">Si quieres contarnos algo más, <a href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">escríbenos en la comunidad</a>. Cada petición se suma a un contador anónimo.</p>'+
+     '<div class="lx-botones"><button type="button" id="lxPideCerrar">Cerrar</button></div></div>';
+    var msg=function(t){ pide.querySelector('#lxPideMsg').textContent=t; };
+    pide.querySelector('#lxChips').onclick=function(e){ var b=e.target.closest&&e.target.closest('.lx-chip'); if(!b) return; var s=b.getAttribute('data-s'); if(enviados[s]){ msg('Esa ya la has pedido. Gracias.'); return; } enviados[s]=1; guardaPed(); cuenta('pide_'+s); cuenta('pide_total'); b.classList.add('ya'); b.textContent=b.textContent+' ✓'; msg('¡Apuntado! Gracias por ayudarnos a decidir qué dibujar primero.'); };
+    pide.querySelector('#lxOtraB').onclick=function(){ var i=pide.querySelector('#lxOtra'); var s=slug(i.value||'').replace(/-/g,'').slice(0,24); if(s.length<3 || /[0-9]/.test(s)){ msg('Escribe una palabra de al menos 3 letras, sin números.'); return; } if(enviados['o_'+s]){ msg('Esa ya la has pedido. Gracias.'); return; } enviados['o_'+s]=1; guardaPed(); cuenta('otra_'+s); cuenta('pide_total'); i.value=''; msg('¡Apuntado: «'+s+'»! Gracias.'); };
+    pide.querySelector('#lxPideCerrar').onclick=function(){ pide.hidden=true; };
+    pide.onclick=function(e){ if(e.target===pide) pide.hidden=true; };
+  }
+  function abrePide(){ if(!pide.firstChild) montaPide(); pide.hidden=false; cuenta('pide_abrir'); }
+
   /* ---- carátula ---- */
   var velo=document.createElement('div'); velo.className='lx-velo'; velo.id='lxPortada';
   velo.innerHTML=
@@ -122,6 +146,7 @@
    '<p>El lince pide un dibujo y hay que encontrarlo en el tablero. Cada dibujo trabaja un sonido. Se oye cómo se dice.</p>'+
    '<button class="lx-jugar" id="lxJugar" type="button" aria-label="Jugar ya"><img src="portada/boton-jugar.webp" width="720" height="240" alt="" onerror="this.parentNode.classList.add(\'lx-sinimg\')"><span class="lx-txt">▶ Jugar</span></button>'+
    '<button class="lx-crea" id="lxCreaB" type="button">✏️ Crea tu propio Lince (con emojis o pictos)</button>'+
+   '<button class="lx-pidebtn" id="lxPideP" type="button">💬 ¿Qué picto te falta?</button>'+
    '<a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">🐝 Más juegos en la comunidad ColmenIA</a>'+
    '<a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo en la comunidad</a>'+
    '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
@@ -136,6 +161,7 @@
    '<div class="lx-fila"><label for="lxBusca">Decir «El lince busca…»<small>Antes de cada palabra.</small></label><input type="checkbox" id="lxBusca"></div>'+
    '<div class="lx-fila"><label for="lxOido">A oído<small>Esconde la palabra escrita: solo se oye.</small></label><input type="checkbox" id="lxOido"></div>'+
    '<p style="font-size:13px;color:#4d6457;margin:10px 0 0">Para elegir sonido o tipo de dibujo, usa los botones de la parte de arriba del juego. Estos ajustes se guardan solo en este aparato.</p>'+
+   '<button class="lx-cerrar" type="button" id="lxPideA" style="background:#fff;color:#2b5a3a;border:2px solid #2FA866;margin-top:10px">💬 ¿Qué picto te falta?</button>'+
    '<button class="lx-cerrar" type="button" id="lxCerrar">Listo</button></div>';
   var ob=document.createElement('button'); ob.className='lx-oir'; ob.type='button'; ob.title='Repetir la palabra'; ob.setAttribute('aria-label','Repetir la palabra'); ob.textContent='🔊';
   function monta(){
@@ -144,6 +170,8 @@
     $('lxVoz').checked=A.voz; $('lxVol').value=A.volumen; $('lxBusca').checked=A.busca; $('lxOido').checked=A.aoido; $('lxDib').value=A.dibujos; aplica();
     ab.onclick=function(){ap.hidden=false};
     $('lxCerrar').onclick=function(){ap.hidden=true};
+    $('lxPideA').onclick=function(){ ap.hidden=true; abrePide(); };
+    document.body.appendChild(pide);
     ap.onclick=function(e){ if(e.target===ap) ap.hidden=true };
     $('lxVoz').onchange=function(){A.voz=this.checked;guarda()};
     $('lxVol').onchange=function(){A.volumen=this.value;guarda()};
@@ -152,6 +180,8 @@
     $('lxDib').onchange=function(){A.dibujos=this.value;guarda(); if(velo.hidden){ try{resetGame()}catch(e){} } pintaTodo(); };
     document.body.appendChild(crea);
     $('lxCreaB').onclick=abreCrea;
+    $('lxPideP').onclick=abrePide;
+    var fin0=$('endScreen'); if(fin0){ var ec=fin0.querySelector('.end-content'); if(ec){ var pb=document.createElement('button'); pb.type='button'; pb.className='lx-pidebtn'; pb.textContent='💬 ¿Qué picto te falta?'; pb.onclick=abrePide; ec.appendChild(pb); } }
     ob.onclick=function(){ diObjetivo(); };
     var tc=$('targetCard'); if(tc) tc.addEventListener('click',diObjetivo);
     velo.querySelectorAll('a[data-sk]').forEach(function(a){ a.addEventListener('click',function(){cuenta('skool_'+a.getAttribute('data-sk'))}); });
