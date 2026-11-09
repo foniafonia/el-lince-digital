@@ -1,8 +1,8 @@
 /* Lo que la versión pública añade al Lince: carátula, ajustes de la logopeda y voz. */
-.lx-velo{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#16351f;overflow:auto;font-family:Nunito,system-ui,sans-serif}
+.lx-velo{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:#16351f;overflow:auto;font-family:Nunito,system-ui,sans-serif}
 .lx-velo[hidden]{display:none}
 .lx-tarjeta{width:100%;max-width:980px;margin:auto;background:#fff8ea;border-radius:0;overflow:hidden;position:relative;min-height:100%;display:flex;flex-direction:column}
-.lx-heroe{display:block;width:100%;height:auto;max-height:62vh;object-fit:cover;background:linear-gradient(135deg,#f3b25a,#d9822b)}
+.lx-heroe{display:block;width:100%;height:auto;max-height:44vh;object-fit:cover;object-position:50% 30%;background:linear-gradient(135deg,#f3b25a,#d9822b)}
 .lx-cuerpo{padding:14px 18px 22px;text-align:center;color:#3a2a14}
 .lx-cuerpo h1{margin:4px 0 4px;font:800 clamp(26px,5vw,38px)/1.1 "Fredoka One",Nunito,system-ui,sans-serif;color:#9a4b0b}
 .lx-cuerpo p{margin:0 auto 12px;max-width:560px;font-size:clamp(15px,2.2vw,18px);line-height:1.4}
@@ -14,8 +14,8 @@
 .lx-idea{display:block;margin:10px auto 0;color:#7a4a12;font:700 15px Nunito,system-ui,sans-serif}
 .lx-nota{margin-top:12px!important;font-size:12px!important;color:#7a6a52}
 .lx-nota a{color:#7a6a52}
-.lx-ajb{position:fixed;top:8px;right:8px;z-index:9000;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:21px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
-.lx-ajp{position:fixed;inset:0;z-index:100000;background:rgba(10,20,12,.6);display:flex;align-items:center;justify-content:center;padding:14px}
+.lx-ajb{position:fixed;bottom:8px;right:8px;z-index:9000;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:21px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+.lx-ajp{position:fixed;inset:0;z-index:2147483100;background:rgba(10,20,12,.6);display:flex;align-items:center;justify-content:center;padding:14px}
 .lx-ajp[hidden]{display:none}
 .lx-caja{background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:92vh;overflow:auto;padding:18px 18px 14px;font-family:Nunito,system-ui,sans-serif;color:#10231A}
 .lx-caja h2{margin:0 0 10px;font-size:22px}
@@ -24,7 +24,11 @@
 .lx-caja select{font:inherit;padding:6px 8px;border-radius:8px}
 .lx-caja input[type=checkbox]{width:24px;height:24px}
 .lx-cerrar{display:block;margin:14px auto 0;padding:10px 26px;border:0;border-radius:12px;background:#2FA866;color:#fff;font:800 16px Nunito,system-ui,sans-serif;cursor:pointer}
-body.lx-aoido #targetName{visibility:hidden}
+body.lx-aoido #targetName,body.lx-aoido #targetEmoji{visibility:hidden}
+body.lx-aoido .target-card-inner{position:relative}
+body.lx-aoido .target-card-inner::after{content:'🔊';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px}
 .lx-oir{position:fixed;left:8px;bottom:8px;z-index:9000;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:22px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
 @media (orientation:landscape) and (max-height:520px){.lx-heroe{max-height:40vh}.lx-cuerpo p{display:none}.lx-cuerpo h1{font-size:22px}.lx-cuerpo{padding:8px 14px 12px}}
 .lx-jugar:active img{content:url(portada/boton-jugar-pulsado.webp)}
+
+#playAgainBtn{display:flex;margin:0 auto}
