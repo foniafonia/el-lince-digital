@@ -6,6 +6,7 @@
   try{ var g=JSON.parse(localStorage.getItem('lince-ajustes')||'{}'); for(var k in g) if(k in A) A[k]=g[k]; }catch(e){}
   if(Q.get('modo')==='audio') A.aoido=true;
   if(Q.get('dibujos')==='picto'||Q.get('dibujos')==='emoji') A.dibujos=Q.get('dibujos');
+  window.lxAjustes=function(){return A}; window.lxSelActiva=function(){return !!SEL};
   function guarda(){ try{localStorage.setItem('lince-ajustes',JSON.stringify(A));}catch(e){} aplica(); }
   function aplica(){ document.body.classList.toggle('lx-aoido',!!A.aoido); }
   /* ---- voz Ximena (voz/*.mp3) ---- */
