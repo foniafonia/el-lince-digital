@@ -8,7 +8,7 @@
   if(Q.get('dibujos')==='picto'||Q.get('dibujos')==='emoji') A.dibujos=Q.get('dibujos');
   window.lxAjustes=function(){return A}; window.lxSelActiva=function(){return !!SEL};
   function guarda(){ try{localStorage.setItem('lince-ajustes',JSON.stringify(A));}catch(e){} aplica(); }
-  function aplica(){ document.body.classList.toggle('lx-aoido',!!A.aoido); }
+  function aplica(){ document.body.classList.toggle('lx-aoido',!!A.aoido||enPares()); }
   /* ---- voz Ximena (voz/*.mp3) ---- */
   function slug(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
   var au=null, cola=0;
@@ -26,18 +26,41 @@
     }catch(e){}
   }
   var cartaNombre=function(){ var n=document.getElementById('targetName'); return n?n.textContent:''; };
-  function diObjetivo(){ var t=cartaNombre(); if(t) di(slug(t)); }
+  function diObjetivo(){ var t=cartaNombre(); if(t){ if(PM==='pareja'&&enPares()){ var g=parejaEnTablero(t); if(g) t=g; } di(slug(t)); } }
 
   /* ---- pictos propios y «Crea tu Lince» ---- */
   var P=window.LX_PICTO||{}; var SEL=null;
   (function(){ var s=Q.get('sel'); if(s){ SEL=s.split('.').map(function(x){return parseInt(x,36)}).filter(function(n){return n>=0}); if(!SEL.length) SEL=null; } })();
   function DB(){ return (typeof itemDatabase!=='undefined')?itemDatabase:[]; }
-  function modoPicto(){ return A.dibujos==='picto'; }
+  /* ---- modo 👂 Pares mínimos: parejas que suenan casi igual; siempre con pictos ---- */
+  var PARES=[['rana','lana'],['rata','lata'],['rey','ley'],['pata','bata'],['bollo','pollo'],['pito','pato'],['peso','beso'],['gasa','casa'],['gol','col'],['garra','jarra'],['duna','luna'],['tos','dos'],['fuente','puente'],['mano','mono'],['pelo','palo'],['bota','bata'],['sapo','sopa']];
+  function enPares(){ try{ return state.currentFilter==='pares'; }catch(e){ return false; } }
+  function tableroPares(db){
+    var ps=PARES.slice().sort(function(){return Math.random()-.5}).slice(0,8), vistos={}, r=[];
+    ps.forEach(function(p){ p.forEach(function(n){ if(vistos[n]) return; var it=db.find(function(x){return x.name===n}); if(it){ vistos[n]=1; r.push(it); } }); });
+    return r;
+  }
+  function modoPicto(){ return A.dibujos==='picto' || enPares(); }
+  var PM='igual';
+  function parejaEnTablero(n){ var en={}, c=[]; try{ state.items.forEach(function(i){ en[i.name]=1; }); }catch(e){} PARES.forEach(function(p){ if(p[0]===n&&en[p[1]]) c.push(p[1]); if(p[1]===n&&en[p[0]]) c.push(p[0]); }); return c[0]||null; }
+  var pm=document.createElement('div'); pm.className='lx-ajp'; pm.hidden=true;
+  pm.innerHTML='<div class="lx-caja" role="dialog" aria-label="Pares mínimos"><h2>👂 Pares mínimos</h2>'+
+   '<p class="lx-peque">Palabras que suenan casi igual: peso y beso, rana y lana… El tablero se llena de parejas. No se ve la palabra, solo se oye. Elige cómo jugar:</p>'+
+   '<button type="button" class="lx-prim lx-modo" data-m="igual"><b>Busca la que oyes</b><br><small>Se oye «peso» y tocas peso. Su gemela, beso, está en el tablero para despistar.</small></button>'+
+   '<button type="button" class="lx-prim lx-modo" data-m="pareja"><b>Busca su pareja</b><br><small>Se oye «peso» y tocas beso. Como una rima.</small></button>'+
+   '<div class="lx-botones"><button type="button" id="lxPmNo">Cancelar</button></div></div>';
+  function juegaPares(m){
+    PM=m; pm.hidden=true; SEL=null;
+    var pill=document.querySelector('.category-pill[data-filter="pares"]'); if(!pill) return;
+    window.__lxPasar=true; pill.click(); window.__lxPasar=false;
+    velo.hidden=true; cuenta('pares_'+m); aplica(); pintaTodo();
+  }
   var f0=window.filterItems;
   if(typeof f0==='function'){
     window.filterItems=function(){
       var db=DB(), r;
-      if(SEL){ r=db.filter(function(it,i){return SEL.indexOf(i)>-1}); } else r=f0();
+      if(enPares()){ return tableroPares(db); }
+      if(SEL){ r=db.filter(function(it,i){return SEL.indexOf(i)>-1}); } else r=f0().filter(function(it){return !it.soloPar});
       if(modoPicto()) r=r.filter(function(it){return !!P[it.name]});
       return r;
     };
@@ -79,6 +102,7 @@
       var db=DB(); var vis=0;
       db.forEach(function(it,i){
         if(modo==='picto' && !P[it.name]) return;
+        if(it.soloPar && modo!=='picto') return;
         if(q && it.name.toLowerCase().indexOf(q)<0) return;
         if(so && !(it.phonemes&&it.phonemes.indexOf(so)>-1)) return;
         if(ca && it.cat!==ca) return;
@@ -213,6 +237,7 @@
    '<div class="lx-cuerpo"><h1>🐱 El Lince Digital</h1>'+
    '<p>El lince pide un dibujo y hay que encontrarlo en el tablero. Cada dibujo trabaja un sonido. Se oye cómo se dice.</p>'+
    '<button class="lx-jugar" id="lxJugar" type="button" aria-label="Jugar ya"><img src="portada/boton-jugar.webp" width="720" height="240" alt="" onerror="this.parentNode.classList.add(\'lx-sinimg\')"><span class="lx-txt">▶ Jugar</span></button>'+
+   '<button class="lx-crea lx-pares" id="lxParB" type="button">👂 Pares mínimos: palabras que suenan casi igual</button>'+
    '<button class="lx-crea" id="lxCreaB" type="button">✏️ Crea tu propio Lince (con emojis o pictos)</button>'+
    '<button class="lx-pidebtn" id="lxImpP" type="button">🖨️ Imprimir tablero y cartas</button>'+
    '<button class="lx-pidebtn" id="lxPideP" type="button">💬 ¿Qué picto te falta?</button>'+
@@ -250,6 +275,12 @@
     $('lxDib').onchange=function(){A.dibujos=this.value;guarda(); if(velo.hidden){ try{resetGame()}catch(e){} } pintaTodo(); };
     document.body.appendChild(crea);
     $('lxCreaB').onclick=abreCrea;
+    document.body.appendChild(pm);
+    $('lxParB').onclick=function(){ pm.hidden=false; };
+    $('lxPmNo').onclick=function(){ pm.hidden=true; };
+    pm.onclick=function(e){ if(e.target===pm) pm.hidden=true; var b=e.target.closest&&e.target.closest('.lx-modo'); if(b) juegaPares(b.getAttribute('data-m')); };
+    var pp=document.querySelector('.category-pill[data-filter="pares"]');
+    if(pp){ pp.textContent='👂 Pares'; pp.addEventListener('click',function(e){ if(!window.__lxPasar){ e.stopImmediatePropagation(); e.preventDefault(); pm.hidden=false; } },true); }
     $('lxPideP').onclick=abrePide;
     $('lxImpP').onclick=function(){ preImprime(tableroActual,A.dibujos); };
     var fin0=$('endScreen'); if(fin0){ var ec=fin0.querySelector('.end-content'); if(ec){ var pb=document.createElement('button'); pb.type='button'; pb.className='lx-pidebtn'; pb.textContent='💬 ¿Qué picto te falta?'; pb.onclick=abrePide; ec.appendChild(pb); } }
@@ -272,7 +303,7 @@
     if(n && window.MutationObserver){
       new MutationObserver(function(){ if(!velo.hidden) return; clearTimeout(tmr); tmr=setTimeout(diObjetivo,220); }).observe(n,{childList:true,characterData:true,subtree:true});
     }
-    var bd=document.querySelector('.board'); if(bd&&window.MutationObserver) new MutationObserver(function(){ if(modoPicto()) document.querySelectorAll('.cell-emoji').forEach(pinta); }).observe(bd,{childList:true,subtree:true});
+    var bd=document.querySelector('.board'); if(bd&&window.MutationObserver) new MutationObserver(function(){ aplica(); if(modoPicto()) document.querySelectorAll('.cell-emoji').forEach(pinta); }).observe(bd,{childList:true,subtree:true});
     var te=$('targetEmoji'); if(te&&window.MutationObserver) new MutationObserver(function(){ pinta(te); }).observe(te,{childList:true,characterData:true,subtree:true});
     if(SEL){ var np=velo.querySelector('.lx-nota'); if(np) np.insertAdjacentHTML('beforebegin','<p style="font-weight:800;color:#9a4b0b">Partida preparada: '+SEL.length+' palabras.</p>'); }
     var fin=$('endScreen');

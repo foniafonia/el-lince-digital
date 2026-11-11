@@ -226,3 +226,8 @@ body::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(12
 .lxi-puente{max-width:820px;margin:-24px auto 40px;padding:14px 18px;border-radius:14px;background:#fff8e7;border:2px solid #F4B93A;font:600 15px/1.45 Nunito,system-ui,sans-serif;color:#25352b;text-align:center}
 .lxi-puente a.lx-cta{margin-top:8px}
 @media print{.lxi-puente{display:none!important}}
+.lx-pares{background:#E3F3F1;border-color:#2F9C95;color:#165a56}
+.lx-modo{display:block;width:100%;margin:8px 0;text-align:left;padding:12px 16px;font:800 17px Nunito,system-ui,sans-serif}
+.lx-modo small{font-weight:600;font-size:14px;opacity:.9}
+.category-pill[data-filter="pares"]{width:auto;padding-inline:10px;white-space:nowrap}
+.lx-modo{background:#2FA866;color:#fff;border:2px solid #2FA866;border-radius:14px;cursor:pointer}
