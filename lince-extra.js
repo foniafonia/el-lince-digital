@@ -2,7 +2,7 @@
   var Q=new URLSearchParams(location.search);
   function cuenta(k){ if(window.linceCuenta) window.linceCuenta(k); }
   /* ---- ajustes (se guardan solo en este aparato) ---- */
-  var A={voz:true,volumen:'normal',busca:false,aoido:false,dibujos:'emoji'};
+  var A={voz:true,volumen:'normal',busca:false,aoido:false,dibujos:'emoji',contraste:''};
   try{ var g=JSON.parse(localStorage.getItem('lince-ajustes')||'{}'); for(var k in g) if(k in A) A[k]=g[k]; }catch(e){}
   if(Q.get('modo')==='audio') A.aoido=true;
   if(Q.get('dibujos')==='picto'||Q.get('dibujos')==='emoji') A.dibujos=Q.get('dibujos');
@@ -33,27 +33,45 @@
   (function(){ var s=Q.get('sel'); if(s){ SEL=s.split('.').map(function(x){return parseInt(x,36)}).filter(function(n){return n>=0}); if(!SEL.length) SEL=null; } })();
   function DB(){ return (typeof itemDatabase!=='undefined')?itemDatabase:[]; }
   /* ---- modo 👂 Pares mínimos: parejas que suenan casi igual; siempre con pictos ---- */
-  var PARES=[['rana','lana'],['rata','lata'],['rey','ley'],['pata','bata'],['bollo','pollo'],['pito','pato'],['peso','beso'],['gasa','casa'],['gol','col'],['garra','jarra'],['duna','luna'],['tos','dos'],['fuente','puente'],['mano','mono'],['pelo','palo'],['bota','bata'],['sapo','sopa']];
+  /* cada pareja lleva el tipo de contraste: son = sonoridad en oclusivas, rl = R/L, modo = modo de articulación, voc = vocal; '' = solo en «Todos» */
+  var PARES=[['rana','lana','rl'],['rata','lata','rl'],['rey','ley','rl'],['pata','bata','son'],['bollo','pollo','son'],['pito','pato','voc'],['peso','beso','son'],['gasa','casa','son'],['gol','col','son'],['garra','jarra','modo'],['duna','luna','modo'],['tos','dos','son'],['fuente','puente','modo'],['mano','mono','voc'],['pelo','palo','voc'],['bota','bata','voc'],['sapo','sopa','']];
+  var TIPOS=[
+    {k:'son',n:'Sonoridad en oclusivas',d:'p/b, t/d, k/g: peso-beso, tos-dos, gol-col…'},
+    {k:'rl',n:'R / L',d:'rana-lana, rata-lata, rey-ley (R fuerte al principio)'},
+    {k:'modo',n:'Modo de articulación',d:'f/p fuente-puente, g/j garra-jarra, d/l duna-luna'},
+    {k:'punto',n:'Punto de articulación',d:'p/t, t/k, b/d…'},
+    {k:'voc',n:'Vocales',d:'pito-pato, mano-mono, pelo-palo, bota-bata'}
+  ];
+  function cuantas(k){ return PARES.filter(function(p){return p[2]===k}).length; }
+  var CON=(Q.get('contraste')||A.contraste||'').split('.').filter(function(k){ return TIPOS.some(function(t){return t.k===k}) && cuantas(k)>0; });
+  function paresActivos(){ return CON.length ? PARES.filter(function(p){return CON.indexOf(p[2])>-1}) : PARES; }
   function enPares(){ try{ return state.currentFilter==='pares'; }catch(e){ return false; } }
   function tableroPares(db){
-    var ps=PARES.slice().sort(function(){return Math.random()-.5}).slice(0,8), vistos={}, r=[];
-    ps.forEach(function(p){ p.forEach(function(n){ if(vistos[n]) return; var it=db.find(function(x){return x.name===n}); if(it){ vistos[n]=1; r.push(it); } }); });
+    var ps=paresActivos().slice().sort(function(){return Math.random()-.5}).slice(0,8), vistos={}, r=[];
+    ps.forEach(function(p){ p.slice(0,2).forEach(function(n){ if(vistos[n]) return; var it=db.find(function(x){return x.name===n}); if(it){ vistos[n]=1; r.push(it); } }); });
     return r;
   }
   function modoPicto(){ return A.dibujos==='picto' || enPares(); }
   var PM='igual';
-  function parejaEnTablero(n){ var en={}, c=[]; try{ state.items.forEach(function(i){ en[i.name]=1; }); }catch(e){} PARES.forEach(function(p){ if(p[0]===n&&en[p[1]]) c.push(p[1]); if(p[1]===n&&en[p[0]]) c.push(p[0]); }); return c[0]||null; }
+  function parejaEnTablero(n){ var en={}, c=[]; try{ state.items.forEach(function(i){ en[i.name]=1; }); }catch(e){} paresActivos().forEach(function(p){ if(p[0]===n&&en[p[1]]) c.push(p[1]); if(p[1]===n&&en[p[0]]) c.push(p[0]); }); return c[0]||null; }
   var pm=document.createElement('div'); pm.className='lx-ajp'; pm.hidden=true;
   pm.innerHTML='<div class="lx-caja" role="dialog" aria-label="Pares mínimos"><h2>👂 Pares mínimos</h2>'+
-   '<p class="lx-peque">Palabras que suenan casi igual: peso y beso, rana y lana… El tablero se llena de parejas. No se ve la palabra, solo se oye. Elige cómo jugar:</p>'+
+   '<p class="lx-peque">Palabras que suenan casi igual: peso y beso, rana y lana… El tablero se llena de parejas. No se ve la palabra, solo se oye.</p>'+
+   '<fieldset class="lx-con"><legend>1. ¿Qué contraste se trabaja?</legend>'+
+   '<p class="lx-peque">Marca uno o varios. Si no marcas ninguno, salen todas las parejas (entrenamiento general).</p>'+
+   TIPOS.map(function(t){ var c=cuantas(t.k), poco=c<3;
+     return '<label class="lx-con-op'+(c?'':' lx-con-no')+'"><input type="checkbox" value="'+t.k+'"'+(c?'':' disabled')+(CON.indexOf(t.k)>-1?' checked':'')+'> <b>'+t.n+'</b> <span class="lx-con-n">'+c+(c===1?' pareja':' parejas')+'</span><br><small>'+(c?t.d:'Todavía no hay parejas de este tipo.')+(c&&poco?' Solo '+c+': el tablero sale corto.':'')+'</small></label>'; }).join('')+
+   '<p class="lx-peque" id="lxConRes"></p></fieldset>'+
+   '<p class="lx-peque" style="font-weight:800;margin-top:12px">2. Elige cómo jugar:</p>'+
    '<button type="button" class="lx-prim lx-modo" data-m="igual"><b>Busca la que oyes</b><br><small>Se oye «peso» y tocas peso. Su gemela, beso, está en el tablero para despistar.</small></button>'+
    '<button type="button" class="lx-prim lx-modo" data-m="pareja"><b>Busca su pareja</b><br><small>Se oye «peso» y tocas beso. Como una rima.</small></button>'+
    '<div class="lx-botones"><button type="button" id="lxPmNo">Cancelar</button></div></div>';
+  function leeCon(){ CON=[].slice.call(pm.querySelectorAll('.lx-con input:checked')).map(function(i){return i.value}); A.contraste=CON.join('.'); guarda(); var r=document.getElementById('lxConRes'); if(r){ var n=paresActivos().length; r.textContent=CON.length?('Saldrán '+n+' parejas.'):('Saldrán las '+PARES.length+' parejas (todas).'); } }
   function juegaPares(m){
-    PM=m; pm.hidden=true; SEL=null;
+    leeCon(); PM=m; pm.hidden=true; SEL=null;
     var pill=document.querySelector('.category-pill[data-filter="pares"]'); if(!pill) return;
     window.__lxPasar=true; pill.click(); window.__lxPasar=false;
-    velo.hidden=true; cuenta('pares_'+m); aplica(); pintaTodo();
+    velo.hidden=true; cuenta('pares_'+m); cuenta('pares_con_'+(CON.join('_')||'todos')); aplica(); pintaTodo();
   }
   var f0=window.filterItems;
   if(typeof f0==='function'){
@@ -276,11 +294,12 @@
     document.body.appendChild(crea);
     $('lxCreaB').onclick=abreCrea;
     document.body.appendChild(pm);
-    $('lxParB').onclick=function(){ pm.hidden=false; };
+    $('lxParB').onclick=function(){ pm.hidden=false; leeCon(); };
+    pm.addEventListener('change',function(e){ if(e.target.closest&&e.target.closest('.lx-con')) leeCon(); });
     $('lxPmNo').onclick=function(){ pm.hidden=true; };
     pm.onclick=function(e){ if(e.target===pm) pm.hidden=true; var b=e.target.closest&&e.target.closest('.lx-modo'); if(b) juegaPares(b.getAttribute('data-m')); };
     var pp=document.querySelector('.category-pill[data-filter="pares"]');
-    if(pp){ pp.textContent='👂 Pares'; pp.addEventListener('click',function(e){ if(!window.__lxPasar){ e.stopImmediatePropagation(); e.preventDefault(); pm.hidden=false; } },true); }
+    if(pp){ pp.textContent='👂 Pares'; pp.addEventListener('click',function(e){ if(!window.__lxPasar){ e.stopImmediatePropagation(); e.preventDefault(); pm.hidden=false; leeCon(); } },true); }
     $('lxPideP').onclick=abrePide;
     $('lxImpP').onclick=function(){ preImprime(tableroActual,A.dibujos); };
     var fin0=$('endScreen'); if(fin0){ var ec=fin0.querySelector('.end-content'); if(ec){ var pb=document.createElement('button'); pb.type='button'; pb.className='lx-pidebtn'; pb.textContent='💬 ¿Qué picto te falta?'; pb.onclick=abrePide; ec.appendChild(pb); } }
