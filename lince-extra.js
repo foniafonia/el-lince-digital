@@ -260,7 +260,7 @@
    '<button class="lx-pidebtn" id="lxImpP" type="button">🖨️ Imprimir tablero y cartas</button>'+
    '<button class="lx-pidebtn" id="lxPideP" type="button">💬 ¿Qué picto te falta?</button>'+
    '<div class="lx-puente"><b>🐝 ColmenIA, la comunidad de logopedas</b><p>Aquí creamos juegos y materiales como este, con lo que nos pedís. Las versiones nuevas (más pictos, más funciones) llegan por niveles a quien está dentro.</p><a class="lx-cta" data-sk="portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">Entrar en la comunidad</a><a class="lx-idea" data-sk="idea_portada" href="https://www.skool.com/logopedia-7339/about" target="_blank" rel="noopener">💡 ¿Echas algo en falta? Cuéntanoslo</a></div>'+
-   '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
+   '<p class="lx-nota">Móvil, tableta u ordenador · sin registro · los resultados no salen del aparato.<br>Voz: Ximena (Microsoft); en pares mínimos, Piper «sharvard» (CC-BY 3.0). Material de apoyo: no sustituye a la logopeda. <a href="privacidad.html">Privacidad</a></p>'+
    '</div></div>';
   /* ---- ajustes ---- */
   var ab=document.createElement('button'); ab.className='lx-ajb'; ab.type='button'; ab.title='Ajustes'; ab.setAttribute('aria-label','Ajustes de la logopeda'); ab.textContent='⚙️';
